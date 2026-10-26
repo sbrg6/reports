@@ -58,7 +58,7 @@ button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line
   <h1>تقرير متابعة المادة</h1>
 
   <div class="card two">
-    <div><label for="subj">المادة</label><input id="subj" placeholder="مثال: الفيزياء 2" autocomplete="off"></div>
+    <div><label for="subj">المادة</label><input id="subj" list="subjs" placeholder="مثال: الفيزياء 2" autocomplete="off"><datalist id="subjs"></datalist></div>
     <div><label for="lead">مسؤول المادة</label><input id="lead" placeholder="اسمك" autocomplete="off"></div>
   </div>
 
@@ -79,6 +79,7 @@ button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line
       <button class="primary" id="tg">إرسال عبر تيليجرام</button>
       <button id="copy">نسخ التقرير</button>
     </div>
+    <button id="reset" style="width:100%;margin-top:10px">تقرير جديد</button>
     <p id="msg"></p>
   </div>
 </main>
@@ -95,8 +96,30 @@ const STAGES=[
 const rows={lec:[],bank:[]};
 const $=id=>document.getElementById(id);
 
-function save(){try{localStorage.setItem("rb_lead",$("lead").value)}catch(e){}}
-function load(){try{$("lead").value=localStorage.getItem("rb_lead")||""}catch(e){}}
+const K="rb_v2";
+function store(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function fetchKey(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
+function saveDraft(){store(K,{subj:$("subj").value,lead:$("lead").value,rows})}
+function snapKey(){return "rb_s_"+$("subj").value.trim()}
+function fillList(){
+  const dl=$("subjs");dl.textContent="";
+  (fetchKey("rb_subjects")||[]).forEach(n=>dl.appendChild(el("option",{value:n})));
+}
+function saveSubject(){
+  const n=$("subj").value.trim();
+  if(!n)return;
+  store(snapKey(),{rows});
+  const list=fetchKey("rb_subjects")||[];
+  if(!list.includes(n)){list.push(n);store("rb_subjects",list)}
+  fillList();
+}
+function restore(){
+  const d=fetchKey(K);
+  if(!d)return;
+  $("subj").value=d.subj||"";
+  $("lead").value=d.lead||"";
+  if(d.rows){rows.lec=d.rows.lec||[];rows.bank=d.rows.bank||[]}
+}
 
 function el(tag,props,kids){
   const e=document.createElement(tag);
@@ -147,17 +170,31 @@ function build(){
   const body=[section("🔷 المحاضرات",rows.lec),section("🔶 البنوك",rows.bank)].filter(Boolean).join("\n\n");
   const text=parts+(body?"\n\n"+body:"");
   $("out").textContent=text;
+  saveDraft();
   return text;
 }
 
 function say(t){$("msg").textContent=t}
 
 $("subj").oninput=build;
-$("lead").oninput=()=>{save();build()};
+$("subj").onchange=()=>{
+  const empty=!rows.lec.concat(rows.bank).some(r=>r.name.trim());
+  const s=fetchKey(snapKey());
+  if(empty&&s&&s.rows){
+    rows.lec=s.rows.lec||[];rows.bank=s.rows.bank||[];
+    render("lec");render("bank");build();
+    say("تم تحميل آخر قائمة محفوظة لهذه المادة.");
+  }
+};
+$("lead").oninput=build;
+$("reset").onclick=()=>{
+  rows.lec=[];rows.bank=[];$("subj").value="";
+  addRow("lec");addRow("bank");say("");
+};
 document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>addRow(b.dataset.add));
 
 $("copy").onclick=async()=>{
-  const t=build();
+  const t=build();saveSubject();
   try{await navigator.clipboard.writeText(t);say("تم النسخ.")}
   catch(e){
     const ta=el("textarea",{value:t});document.body.appendChild(ta);ta.select();
@@ -170,11 +207,16 @@ $("tg").onclick=()=>{
   const t=build();
   if(!$("subj").value.trim()){say("اكتب اسم المادة أولاً.");return}
   if(!rows.lec.concat(rows.bank).some(r=>r.name.trim())){say("أضف محاضرة أو بنك واحد على الأقل.");return}
+  saveSubject();
   window.open("https://t.me/share/url?url=&text="+encodeURIComponent(t),"_blank");
   say("اختر المستلم في تيليجرام ثم اضغط إرسال.");
 };
 
-load();addRow("lec");addRow("bank");build();
+fillList();
+restore();
+if(!rows.lec.length)rows.lec.push({name:"",stage:0,note:""});
+if(!rows.bank.length)rows.bank.push({name:"",stage:0,note:""});
+render("lec");render("bank");build();
 </script>
 </body>
 </html>
