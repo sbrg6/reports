@@ -140,7 +140,7 @@ function logo(){
 function mount(node){
   app.textContent="";
   const bar=el("div",{className:"bar"},[logo()]);
-  if(me)bar.appendChild(el("span",{className:"who"},[((prof&&prof.name)||me.email)+" · ",el("button",{className:"link",textContent:"خروج",onclick:logout})]));
+  if(me)bar.appendChild(el("span",{className:"who"},[((prof&&prof.name)||me.email)+" · ",el("button",{className:"link",textContent:"كلمة السر",onclick:showPw})," · ",el("button",{className:"link",textContent:"خروج",onclick:logout})]));
   app.appendChild(bar);app.appendChild(node);window.scrollTo(0,0);
 }
 function countUp(node,n){
@@ -222,6 +222,29 @@ function showReport(list){
     ])
   ]);
   document.body.appendChild(ov);
+}
+
+function showPw(){
+  const a=el("input",{type:"password",placeholder:"كلمة السر الجديدة (6 أحرف على الأقل)",autocomplete:"new-password"});
+  const b=el("input",{type:"password",placeholder:"أعد كتابتها",autocomplete:"new-password"});
+  const msg=el("p",{className:"msg"});
+  const ov=el("div",{className:"ov",onclick:e=>{if(e.target===ov)ov.remove()}},[
+    el("div",{className:"sheet"},[
+      el("h2",{textContent:"تغيير كلمة السر"}),
+      el("div",{style:"height:10px"}),a,el("div",{style:"height:8px"}),b,msg,
+      el("button",{className:"btn primary",textContent:"حفظ",onclick:async()=>{
+        if(a.value.length<6){msg.textContent="كلمة السر لازم تكون 6 أحرف أو أكتر.";return}
+        if(a.value!==b.value){msg.textContent="الكلمتين مو متطابقتين.";return}
+        msg.textContent="جاري الحفظ…";
+        const {error}=await sb.auth.updateUser({password:a.value});
+        if(error){msg.textContent="تعذّر الحفظ: "+error.message;return}
+        ov.remove();toast("تم تغيير كلمة السر ✓");
+      }}),
+      el("button",{className:"link",textContent:"إلغاء",onclick:()=>ov.remove()})
+    ])
+  ]);
+  document.body.appendChild(ov);
+  a.focus();
 }
 
 function showLate(list){
