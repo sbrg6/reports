@@ -78,6 +78,10 @@ input:focus,button:focus-visible{outline:2px solid var(--blue);outline-offset:2p
 @keyframes blink{50%{opacity:.4}}
 .chip{font-size:.72rem;font-weight:700;color:var(--onblue);background:var(--c5);border-radius:6px;padding:0 8px}
 .alert{display:flex;justify-content:space-between;align-items:center;width:100%;border-color:var(--c5);text-align:start}
+.acts2{display:grid;gap:8px}
+select{font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+.arow{display:grid;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.danger{color:var(--c5);font-size:.85rem;text-align:start}
 .lrow{display:block;width:100%;text-align:start;padding:10px 0;border-top:1px solid var(--line)}
 .note{margin-top:8px;font-size:.9rem;padding:8px 10px}
 .redo{font-size:.82rem;color:var(--c5);font-weight:500}
@@ -224,6 +228,54 @@ function showReport(list){
   document.body.appendChild(ov);
 }
 
+async function showAdmin(){
+  const {data:pr,error:pe}=await sb.from("profiles").select("id,name,role").order("name");
+  if(pe){toast("تعذّر تحميل الحسابات: "+pe.message);return}
+  const people=pr||[];
+  const ov=el("div",{className:"ov",onclick:e=>{if(e.target===ov)ov.remove()}});
+  const sheet=el("div",{className:"sheet"});ov.appendChild(sheet);
+  const leadSel=val=>{
+    const s=el("select");
+    s.appendChild(el("option",{value:"",textContent:"— بدون مسؤول —"}));
+    people.forEach(p=>s.appendChild(el("option",{value:p.id,textContent:(p.name||p.id.slice(0,6))+(p.role==="admin"?" (أدمن)":""),selected:p.id===val})));
+    return s;
+  };
+  async function upd(id,patch){
+    const {error}=await sb.from("subjects").update(patch).eq("id",id);
+    if(error){toast("تعذّر الحفظ: "+error.message);return false}
+    toast("تم الحفظ ✓");return true;
+  }
+  async function refresh(){await loadSubjects();draw()}
+  function draw(){
+    sheet.textContent="";
+    sheet.appendChild(el("h2",{textContent:"⚙️ إدارة المواد"}));
+    const nn=el("input",{placeholder:"اسم مادة جديدة"});
+    const ns=leadSel("");
+    sheet.appendChild(el("div",{className:"arow"},[nn,ns,el("button",{className:"btn primary",textContent:"+ إضافة مادة",onclick:async()=>{
+      const v=nn.value.trim();
+      if(!v){toast("اكتب اسم المادة أولاً");return}
+      const {error}=await sb.from("subjects").insert({name:v,lead_id:ns.value||null});
+      if(error){toast("تعذّرت الإضافة: "+error.message);return}
+      toast("انضافت المادة ✓");await refresh();
+    }})]));
+    subjects.forEach(s=>{
+      const nm=el("input",{value:s.name});
+      nm.onchange=async()=>{const v=nm.value.trim();if(!v){nm.value=s.name;return}if(await upd(s.id,{name:v}))s.name=v};
+      const sel=leadSel(s.lead_id);
+      sel.onchange=async()=>{if(await upd(s.id,{lead_id:sel.value||null}))s.lead_id=sel.value||null};
+      const del=el("button",{className:"danger",textContent:"حذف المادة وكل ملفاتها",onclick:async()=>{
+        if(!confirm("حذف «"+s.name+"» وكل ملفاتها نهائياً؟"))return;
+        const {error}=await sb.from("subjects").delete().eq("id",s.id);
+        if(error){toast("تعذّر الحذف: "+error.message);return}
+        toast("انحذفت المادة");await refresh();
+      }});
+      sheet.appendChild(el("div",{className:"arow"},[nm,sel,del]));
+    });
+    sheet.appendChild(el("button",{className:"link",textContent:"إغلاق",onclick:()=>{ov.remove();showList()}}));
+  }
+  document.body.appendChild(ov);draw();
+}
+
 function showPw(){
   const a=el("input",{type:"password",placeholder:"كلمة السر الجديدة (6 أحرف على الأقل)",autocomplete:"new-password"});
   const b=el("input",{type:"password",placeholder:"أعد كتابتها",autocomplete:"new-password"});
@@ -285,7 +337,10 @@ function showList(){
     card.style.animationDelay=(.2+idx*.06)+"s";
     wrap.appendChild(card);
   });
-  if(subjects.length)wrap.appendChild(el("div",{className:"dock"},[el("button",{className:"btn primary",textContent:"📋 تقرير الأسبوع",onclick:()=>showReport(subjects)})]));
+  const dockBtns=[];
+  if(subjects.length)dockBtns.push(el("button",{className:"btn primary",textContent:"📋 تقرير الأسبوع",onclick:()=>showReport(subjects)}));
+  if(prof&&prof.role==="admin")dockBtns.push(el("button",{className:"btn",textContent:"⚙️ إدارة المواد",onclick:showAdmin}));
+  if(dockBtns.length)wrap.appendChild(el("div",{className:"dock acts2"},dockBtns));
   mount(wrap);
 }
 
