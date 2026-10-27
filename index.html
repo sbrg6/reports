@@ -344,6 +344,25 @@ async function sendGroup(btn){
   finally{btn.disabled=false;btn.textContent=old}
 }
 
+async function showArchive(){
+  const {data,error}=await sb.from("reports").select("id,created_at,source,body").order("created_at",{ascending:false}).limit(40);
+  if(error){toast("تعذّر تحميل الأرشيف: "+error.message);return}
+  const ov=el("div",{className:"ov",onclick:e=>{if(e.target===ov)ov.remove()}});
+  const sheet=el("div",{className:"sheet"},[el("h2",{textContent:"📚 أرشيف التقارير"})]);
+  if(!(data||[]).length)sheet.appendChild(el("p",{className:"hint",textContent:"ما في تقارير محفوظة لسا."}));
+  (data||[]).forEach(r=>{
+    const when=new Date(r.created_at).toLocaleString("ar-SY",{dateStyle:"medium",timeStyle:"short"});
+    const who=r.source==="auto"?"تلقائي (جمعة 8 مساءً)":"يدوي";
+    sheet.appendChild(el("details",{className:"arow"},[
+      el("summary",{textContent:when+" · "+who}),
+      el("pre",{className:"rep",textContent:r.body})
+    ]));
+  });
+  sheet.appendChild(el("button",{className:"link",textContent:"إغلاق",onclick:()=>ov.remove()}));
+  ov.appendChild(sheet);
+  document.body.appendChild(ov);
+}
+
 async function backup(){
   const {data:pr}=await sb.from("profiles").select("id,name");
   const who={};(pr||[]).forEach(p=>who[p.id]=p.name);
@@ -410,6 +429,7 @@ function showList(){
     tools.push(el("button",{className:"btn primary wide",textContent:"📤 إرسال للمجموعة",onclick:e=>sendGroup(e.currentTarget)}));
     tools.push(el("button",{className:"btn",textContent:"⚙️ إدارة المواد",onclick:showAdmin}));
     tools.push(el("button",{className:"btn",textContent:"⬇️ نسخة احتياطية",onclick:backup}));
+    tools.push(el("button",{className:"btn",textContent:"📚 الأرشيف",onclick:showArchive}));
   }
   if(tools.length)wrap.appendChild(el("div",{className:"tools"},tools));
   const lateAll=subjects.flatMap(s=>s.items.filter(isLate).map(i=>({s,i})));
