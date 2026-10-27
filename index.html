@@ -283,6 +283,25 @@ async function showAdmin(){
   document.body.appendChild(ov);draw();
 }
 
+async function sendGroup(btn){
+  if(!confirm("نرسل التقرير للمجموعة الآن؟"))return;
+  const old=btn.textContent;
+  btn.disabled=true;btn.textContent="جاري الإرسال…";
+  try{
+    const {data:{session}}=await sb.auth.getSession();
+    if(!session){toast("سجّل دخول من جديد");return}
+    const r=await fetch(SB_URL+"/functions/v1/dynamic-worker",{
+      method:"POST",
+      headers:{"Authorization":"Bearer "+session.access_token,"apikey":SB_KEY,"Content-Type":"application/json"},
+      body:"{}"
+    });
+    const j=await r.json().catch(()=>({}));
+    if(j.ok)toast("انرسل التقرير للمجموعة ✓");
+    else toast("ما انرسل: "+(j.description||("خطأ "+r.status)));
+  }catch(e){toast("خطأ شبكة، جرّب مرة تانية")}
+  finally{btn.disabled=false;btn.textContent=old}
+}
+
 async function backup(){
   const {data:pr}=await sb.from("profiles").select("id,name");
   const who={};(pr||[]).forEach(p=>who[p.id]=p.name);
@@ -346,6 +365,7 @@ function showList(){
   const tools=[];
   if(subjects.length)tools.push(el("button",{className:"btn primary wide",textContent:"📋 تقرير الأسبوع",onclick:()=>showReport(subjects)}));
   if(prof&&prof.role==="admin"){
+    tools.push(el("button",{className:"btn primary wide",textContent:"📤 إرسال للمجموعة",onclick:e=>sendGroup(e.currentTarget)}));
     tools.push(el("button",{className:"btn",textContent:"⚙️ إدارة المواد",onclick:showAdmin}));
     tools.push(el("button",{className:"btn",textContent:"⬇️ نسخة احتياطية",onclick:backup}));
   }
