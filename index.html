@@ -105,6 +105,21 @@ select{font:inherit;color:var(--ink);background:var(--field);border:1px solid va
 #toast{position:fixed;inset-inline:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));margin:auto;width:max-content;max-width:90%;background:var(--ink);color:var(--bg);border-radius:10px;padding:8px 16px;font-size:.9rem;opacity:0;transition:opacity .2s;pointer-events:none;z-index:10}
 #toast.on{opacity:1}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+html[data-theme="starry"]{color-scheme:dark;--bg:#0b1638;--bg2:#13234f;--card:rgba(20,36,80,.72);--ink:#f3ecd2;--mute:#a9b6d9;--line:#2a3f78;--blue:#f4d35e;--glow:rgba(244,211,94,.25);--onblue:#0b1638;--field:#0e1c44;--c0:#24366b;--c1:#3c5aa0;--c2:#5b7fcf;--c3:#f4d35e;--c4:#7fd6b0;--c5:#f08a5d}
+html[data-theme="sunflowers"]{color-scheme:dark;--bg:#2b1d08;--bg2:#4a3210;--card:rgba(58,40,12,.75);--ink:#fff4cf;--mute:#d8b97a;--line:#6b4d1c;--blue:#f5c518;--glow:rgba(245,197,24,.28);--onblue:#2b1d08;--field:#3a280c;--c0:#5a4220;--c1:#8c6a22;--c2:#c0901a;--c3:#f5c518;--c4:#9fd16b;--c5:#f08a3c}
+html[data-theme="wheat"]{color-scheme:light;--bg:#eef3fa;--bg2:#dfe9f6;--card:rgba(255,255,255,.85);--ink:#1f2d3d;--mute:#5d6f86;--line:#c7d6ea;--blue:#c98f12;--glow:rgba(201,143,18,.25);--onblue:#1f2d3d;--field:#f7faff;--c0:#d7dde8;--c1:#e9c46a;--c2:#e0a526;--c3:#3a6fb0;--c4:#3f9b6a;--c5:#c2570c}
+html[data-theme="almond"]{color-scheme:light;--bg:#f4f9fd;--bg2:#e6f1fa;--card:rgba(255,255,255,.9);--ink:#1d3345;--mute:#5f7a8c;--line:#d3e4ef;--blue:#d97b9d;--glow:rgba(217,123,157,.22);--onblue:#fff;--field:#fbfdff;--c0:#dbe7ef;--c1:#f2c6d6;--c2:#e89ab5;--c3:#7aa6d9;--c4:#4aa88a;--c5:#c2570c}
+html[data-theme="cafe"]{color-scheme:dark;--bg:#0f1a33;--bg2:#1c2b4d;--card:rgba(24,38,68,.8);--ink:#f5efe0;--mute:#9fb0cc;--line:#2c3f66;--blue:#fca311;--glow:rgba(252,163,17,.28);--onblue:#14213d;--field:#13203d;--c0:#2c3f66;--c1:#4b6494;--c2:#7d8fb5;--c3:#fca311;--c4:#8fd3a8;--c5:#f2794d}
+html[data-theme="irises"]{color-scheme:dark;--bg:#171f48;--bg2:#2a3570;--card:rgba(36,44,98,.78);--ink:#eef0ff;--mute:#a6accc;--line:#3b4790;--blue:#9b8be0;--glow:rgba(155,139,224,.3);--onblue:#171f48;--field:#1d2757;--c0:#333e7a;--c1:#5a5fb0;--c2:#7d74cf;--c3:#9b8be0;--c4:#6fd3b0;--c5:#f2a65a}
+html[data-mode="light"] .logo-d{display:none}
+html[data-mode="light"] .logo-l{display:block}
+html[data-mode="dark"] .logo-l{display:none}
+html[data-mode="dark"] .logo-d{display:block}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.tcard{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.tcard span:last-child{font-size:.9rem;font-weight:500}
+.tsw{width:100%;height:44px;border-radius:10px;display:block}
 </style>
 </head>
 <body>
@@ -131,6 +146,47 @@ const KINDS=[
   ["practical","🔷 القسم العملي","تم رفع","عملي 1"],
   ["bank","🔶 البنك","تم تجهيز","بنك 2"]
 ];
+const THEMES=[
+  {id:"bluebits",name:"Blue Bits (افتراضي)",sw:["#2c91ed","#070e1f"]},
+  {id:"starry",name:"ليلة النجوم",sw:["#f4d35e","#14234d"]},
+  {id:"sunflowers",name:"عبّاد الشمس",sw:["#f5c518","#3a2a0c"]},
+  {id:"wheat",name:"حقل القمح",sw:["#c98f12","#eef3fa"]},
+  {id:"almond",name:"زهر اللوز",sw:["#d97b9d","#f4f9fd"]},
+  {id:"cafe",name:"مقهى الليل",sw:["#fca311","#14213d"]},
+  {id:"irises",name:"السوسن",sw:["#9b8be0","#1c2452"]}
+];
+const THEME_MODE={starry:"dark",sunflowers:"dark",wheat:"light",almond:"light",cafe:"dark",irises:"dark"};
+function applyTheme(id){
+  const root=document.documentElement;
+  if(!id||id==="bluebits"){root.removeAttribute("data-theme");root.removeAttribute("data-mode");return}
+  root.setAttribute("data-theme",id);
+  root.setAttribute("data-mode",THEME_MODE[id]||"dark");
+}
+async function loadTheme(){
+  const {data}=await sb.from("user_prefs").select("theme").eq("user_id",me.id).maybeSingle();
+  applyTheme(data?data.theme:"bluebits");
+}
+function showThemes(){
+  const ov=el("div",{className:"ov",onclick:e=>{if(e.target===ov)ov.remove()}});
+  const grid=el("div",{className:"tgrid"});
+  THEMES.forEach(t=>{
+    grid.appendChild(el("button",{className:"tcard",onclick:async()=>{
+      applyTheme(t.id);
+      const {error}=await sb.from("user_prefs").upsert({user_id:me.id,theme:t.id});
+      toast(error?"تعذّر الحفظ: "+error.message:"تم تغيير الثيم ✓");
+    }},[
+      el("span",{className:"tsw",style:"background:linear-gradient(135deg,"+t.sw[0]+" 50%,"+t.sw[1]+" 50%)"}),
+      el("span",{textContent:t.name})
+    ]));
+  });
+  ov.appendChild(el("div",{className:"sheet"},[
+    el("h2",{textContent:"🎨 اختار الثيم"}),
+    grid,
+    el("button",{className:"link",textContent:"إغلاق",onclick:()=>ov.remove()})
+  ]));
+  document.body.appendChild(ov);
+}
+
 const app=document.getElementById("app");
 let sb,me=null,prof=null,subjects=[],cur=null,tt;
 
@@ -151,7 +207,7 @@ function logo(){
 function mount(node){
   app.textContent="";
   const bar=el("div",{className:"bar"},[logo()]);
-  if(me)bar.appendChild(el("span",{className:"who"},[((prof&&prof.name)||me.email)+" · ",el("button",{className:"link",textContent:"كلمة السر",onclick:showPw})," · ",el("button",{className:"link",textContent:"خروج",onclick:logout})]));
+  if(me)bar.appendChild(el("span",{className:"who"},[((prof&&prof.name)||me.email)+" · ",el("button",{className:"link",textContent:"🎨",onclick:showThemes})," · ",el("button",{className:"link",textContent:"كلمة السر",onclick:showPw})," · ",el("button",{className:"link",textContent:"خروج",onclick:logout})]));
   app.appendChild(bar);app.appendChild(node);window.scrollTo(0,0);
 }
 function countUp(node,n){
@@ -174,6 +230,7 @@ async function init(){
 async function afterLogin(){
   const {data}=await sb.from("profiles").select("name,role").eq("id",me.id).maybeSingle();
   prof=data||{name:me.email,role:"lead"};
+  await loadTheme();
   await loadSubjects();showList();
 }
 async function loadSubjects(){
@@ -182,7 +239,7 @@ async function loadSubjects(){
   subjects=data||[];
   if(cur)cur=subjects.find(s=>s.id===cur.id)||null;
 }
-async function logout(){await sb.auth.signOut();me=null;prof=null;subjects=[];cur=null;showLogin()}
+async function logout(){applyTheme("bluebits");await sb.auth.signOut();me=null;prof=null;subjects=[];cur=null;showLogin()}
 
 function showLogin(){
   const em=el("input",{type:"email",placeholder:"الإيميل",autocomplete:"username"});
