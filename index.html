@@ -363,6 +363,10 @@ async function showArchive(){
   document.body.appendChild(ov);
 }
 
+const CH_LBL={add_item:"أضيف ملف",del_item:"انحذف ملف",add_subject:"أضيفت مادة",del_subject:"انحذفت مادة",note:"تعديل السبب",rename:"تغيّر الاسم",lead:"تغيّر المسؤول"};
+const CH_ST=["عند العضو العلمي","عند العضو التقني","عند المسؤول التقني","عند مسؤول المادة (تدقيق)","مرفوعة","رجع للتعديل"];
+function chTr(d){return (d||"").split(" ").filter(Boolean).map(x=>x.startsWith("stage:")?"صار: "+(CH_ST[+x.slice(6)]||""):(CH_LBL[x]||x)).join(" · ")}
+
 async function showChanges(){
   const {data,error}=await sb.from("changes").select("created_at,actor_name,action,item_name,detail").order("created_at",{ascending:false}).limit(100);
   if(error){toast("تعذّر تحميل السجل: "+error.message);return}
@@ -371,7 +375,7 @@ async function showChanges(){
   if(!(data||[]).length)sheet.appendChild(el("p",{className:"hint",textContent:"ما في تغييرات مسجّلة لسا."}));
   (data||[]).forEach(c=>{
     const when=new Date(c.created_at).toLocaleString("ar-SY",{dateStyle:"short",timeStyle:"short"});
-    const what=(c.item_name||"")+(c.detail?" · "+c.detail:"");
+    const what=(c.item_name||"")+(c.detail?" · "+chTr(c.detail):"");
     sheet.appendChild(el("div",{className:"arow"},[
       el("div",{className:"since",textContent:when+" · "+(c.actor_name||"نظام")}),
       el("div",{textContent:what})
