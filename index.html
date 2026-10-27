@@ -363,6 +363,25 @@ async function showArchive(){
   document.body.appendChild(ov);
 }
 
+async function showChanges(){
+  const {data,error}=await sb.from("changes").select("created_at,actor_name,action,item_name,detail").order("created_at",{ascending:false}).limit(100);
+  if(error){toast("تعذّر تحميل السجل: "+error.message);return}
+  const ov=el("div",{className:"ov",onclick:e=>{if(e.target===ov)ov.remove()}});
+  const sheet=el("div",{className:"sheet"},[el("h2",{textContent:"🕘 سجل التغييرات"})]);
+  if(!(data||[]).length)sheet.appendChild(el("p",{className:"hint",textContent:"ما في تغييرات مسجّلة لسا."}));
+  (data||[]).forEach(c=>{
+    const when=new Date(c.created_at).toLocaleString("ar-SY",{dateStyle:"short",timeStyle:"short"});
+    const what=(c.item_name||"")+(c.detail?" · "+c.detail:"");
+    sheet.appendChild(el("div",{className:"arow"},[
+      el("div",{className:"since",textContent:when+" · "+(c.actor_name||"نظام")}),
+      el("div",{textContent:what})
+    ]));
+  });
+  sheet.appendChild(el("button",{className:"link",textContent:"إغلاق",onclick:()=>ov.remove()}));
+  ov.appendChild(sheet);
+  document.body.appendChild(ov);
+}
+
 async function backup(){
   const {data:pr}=await sb.from("profiles").select("id,name");
   const who={};(pr||[]).forEach(p=>who[p.id]=p.name);
@@ -430,6 +449,7 @@ function showList(){
     tools.push(el("button",{className:"btn",textContent:"⚙️ إدارة المواد",onclick:showAdmin}));
     tools.push(el("button",{className:"btn",textContent:"⬇️ نسخة احتياطية",onclick:backup}));
     tools.push(el("button",{className:"btn",textContent:"📚 الأرشيف",onclick:showArchive}));
+    tools.push(el("button",{className:"btn",textContent:"🕘 السجل",onclick:showChanges}));
   }
   if(tools.length)wrap.appendChild(el("div",{className:"tools"},tools));
   const lateAll=subjects.flatMap(s=>s.items.filter(isLate).map(i=>({s,i})));
