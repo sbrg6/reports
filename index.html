@@ -235,6 +235,45 @@ function showReport(list){
   document.body.appendChild(ov);
 }
 
+async function fnCall(body){
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session)return {ok:false,description:"سجّل دخول من جديد"};
+  try{
+    const r=await fetch(SB_URL+"/functions/v1/dynamic-worker",{method:"POST",headers:{"Authorization":"Bearer "+session.access_token,"apikey":SB_KEY,"Content-Type":"application/json"},body:JSON.stringify(body)});
+    return await r.json().catch(()=>({ok:false,description:"خطأ "+r.status}));
+  }catch(e){return {ok:false,description:"خطأ شبكة"}}
+}
+
+async function renderAccounts(box){
+  box.textContent="";
+  box.appendChild(el("h2",{textContent:"👥 الحسابات"}));
+  const r=await fnCall({action:"list_users"});
+  if(!r.ok){box.appendChild(el("p",{className:"msg",textContent:"تعذّر التحميل: "+(r.description||"")}));return}
+  const nm=el("input",{placeholder:"اسم المسؤول"});
+  const em=el("input",{type:"email",placeholder:"الإيميل (مثال: physics@bluebits.com)",autocomplete:"off"});
+  const pw=el("input",{type:"text",placeholder:"كلمة السر (6 أحرف أو أكتر)",autocomplete:"off"});
+  box.appendChild(el("div",{className:"arow"},[nm,em,pw,el("button",{className:"btn primary",textContent:"+ إنشاء حساب",onclick:async(e)=>{
+    const b=e.currentTarget;b.disabled=true;
+    const x=await fnCall({action:"create_user",name:nm.value.trim(),email:em.value.trim(),password:pw.value});
+    b.disabled=false;
+    if(x.ok){toast("انشأ الحساب ✓ اربطه بمادة من إدارة المواد");renderAccounts(box)}
+    else toast("ما انشأ: "+(x.description||""));
+  }})]));
+  r.users.forEach(u=>{
+    const np=el("input",{type:"text",placeholder:"كلمة سر جديدة",autocomplete:"off"});
+    box.appendChild(el("div",{className:"arow"},[
+      el("strong",{textContent:(u.name||"بدون اسم")+" · "+u.email+(u.role==="admin"?" (أدمن)":"")}),
+      np,
+      el("button",{className:"btn",textContent:"تغيير كلمة السر",onclick:async()=>{
+        if(np.value.length<6){toast("6 أحرف على الأقل");return}
+        const x=await fnCall({action:"set_password",user_id:u.id,password:np.value});
+        if(x.ok){toast("تغيّرت كلمة السر ✓");np.value=""}
+        else toast("ما تغيّرت: "+(x.description||""));
+      }})
+    ]));
+  });
+}
+
 async function showAdmin(){
   const {data:pr,error:pe}=await sb.from("profiles").select("id,name,role").order("name");
   if(pe){toast("تعذّر تحميل الحسابات: "+pe.message);return}
@@ -278,6 +317,9 @@ async function showAdmin(){
       }});
       sheet.appendChild(el("div",{className:"arow"},[nm,sel,del]));
     });
+    const accBox=el("div");
+    sheet.appendChild(accBox);
+    renderAccounts(accBox);
     sheet.appendChild(el("button",{className:"link",textContent:"إغلاق",onclick:()=>{ov.remove();showList()}}));
   }
   document.body.appendChild(ov);draw();
