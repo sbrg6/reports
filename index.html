@@ -94,9 +94,17 @@ input,select{width:100%;font:inherit;color:var(--text);background:var(--surface2
 .tcard{border:1px solid var(--border);border-radius:14px;padding:10px;background:var(--surface2);color:var(--text);cursor:pointer;font:inherit;font-size:.84rem;display:flex;flex-direction:column;gap:8px;align-items:center}
 .tcard.on{border-color:var(--accent)}
 .tsw{width:100%;height:40px;border-radius:10px}
-.login{max-width:380px;margin:10vh auto 0}
-.login .logo{width:150px;margin:0 auto 18px}
-.login h1,.login .sub{text-align:center}
+.login-stage{position:relative;max-width:380px;margin:9vh auto 0;perspective:1200px}
+.login-stage::before,.login-stage::after{content:"";position:fixed;z-index:0;border-radius:50%;filter:blur(60px);pointer-events:none;opacity:.55}
+.login-stage::before{width:340px;height:340px;top:-10%;right:-14%;background:radial-gradient(circle,var(--accent),transparent 70%);animation:orb1 16s ease-in-out infinite alternate}
+.login-stage::after{width:300px;height:300px;bottom:-12%;left:-16%;background:radial-gradient(circle,#2c5fd0,transparent 70%);animation:orb2 19s ease-in-out infinite alternate}
+@keyframes orb1{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-26px,30px,0) scale(1.15)}}
+@keyframes orb2{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(24px,-26px,0) scale(1.12)}}
+.login{position:relative;z-index:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:30px 24px;box-shadow:0 30px 60px -30px rgba(0,0,0,.55);transform-style:preserve-3d;will-change:transform;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.login .logo{width:132px;margin:0 auto 18px;transform:translateZ(30px)}
+.login h1,.login .sub{text-align:center;transform:translateZ(20px)}
+.login input{transform:translateZ(16px)}
+.login input+input{margin-top:12px}
 #toast{position:fixed;inset-inline:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));margin:auto;width:max-content;max-width:90%;background:var(--text);color:var(--bg);border-radius:12px;padding:9px 16px;font-size:.9rem;opacity:0;transform:translateY(8px);transition:opacity .22s,transform .22s;pointer-events:none;z-index:50}
 #toast.on{opacity:1;transform:none}
 .view{animation:rise .35s both}
@@ -255,9 +263,9 @@ function topbar(){
   ]);
   return el("div",{className:"top"},[el("div",{className:"logo"},[el("img",{src:LOGO,alt:"Blue Bits"})]),who]);
 }
-function mount(node){
+function mount(node,noTop){
   app.textContent="";
-  app.appendChild(me?topbar():el("div",{className:"top"},[el("div",{className:"logo"},[el("img",{src:LOGO,alt:"Blue Bits"})])]));
+  if(!noTop)app.appendChild(me?topbar():el("div",{className:"top"},[el("div",{className:"logo"},[el("img",{src:LOGO,alt:"Blue Bits"})])]));
   app.appendChild(node);
   window.scrollTo(0,0);
 }
@@ -267,6 +275,7 @@ function showLogin(){
   const pw=el("input",{type:"password",placeholder:"كلمة السر",autocomplete:"current-password"});
   const msg=el("p",{className:"msg"});
   const f=el("form",{className:"login"},[
+    el("div",{className:"logo"},[el("img",{src:LOGO,alt:"Blue Bits"})]),
     el("h1",{textContent:"أهلاً فيك"}),
     el("p",{className:"sub",textContent:"سجّل دخول لتتابع ملفات مادتك."}),
     em,pw,
@@ -279,7 +288,17 @@ function showLogin(){
     if(error){msg.textContent="الإيميل أو كلمة السر غلط.";return}
     me=data.user;await afterLogin();
   };
-  mount(f);
+  const stage=el("div",{className:"login-stage"},[f]);
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!reduce&&!("ontouchstart" in window)){
+    stage.onmousemove=e=>{
+      const r=stage.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;
+      f.style.transform="perspective(1200px) rotateY("+(px*7)+"deg) rotateX("+(py*-7)+"deg)";
+    };
+    stage.onmouseleave=()=>{f.style.transform="perspective(1200px) rotateY(0) rotateX(0)"};
+  }
+  mount(stage,true);
 }
 
 function showList(){
