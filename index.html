@@ -269,6 +269,12 @@ async function renderAccounts(box){
         const x=await fnCall({action:"set_password",user_id:u.id,password:np.value});
         if(x.ok){toast("تغيّرت كلمة السر ✓");np.value=""}
         else toast("ما تغيّرت: "+(x.description||""));
+      }}),
+      el("button",{className:"danger",textContent:"حذف",onclick:async()=>{
+        if(!confirm("نحذف حساب "+u.email+"؟ المادة اللي إلو بتصير بدون مسؤول."))return;
+        const x=await fnCall({action:"delete_user",user_id:u.id});
+        if(x.ok){toast("انحذف الحساب ✓");renderAccounts(box)}
+        else toast("ما انحذف: "+(x.description||""));
       }})
     ]));
   });
