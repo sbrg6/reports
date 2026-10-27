@@ -73,6 +73,12 @@ input:focus,button:focus-visible{outline:2px solid var(--blue);outline-offset:2p
 @keyframes beat{50%{transform:scaleY(1.9)}}
 .stlabel{font-size:.9rem;font-weight:500}
 .since{color:var(--mute);font-size:.8rem}
+.since.late{color:var(--c5);font-weight:700}
+.cell.late{animation:pop .45s var(--d,0s) both,blink 1.8s 1s ease-in-out infinite}
+@keyframes blink{50%{opacity:.4}}
+.chip{font-size:.72rem;font-weight:700;color:var(--onblue);background:var(--c5);border-radius:6px;padding:0 8px}
+.alert{display:flex;justify-content:space-between;align-items:center;width:100%;border-color:var(--c5);text-align:start}
+.lrow{display:block;width:100%;text-align:start;padding:10px 0;border-top:1px solid var(--line)}
 .note{margin-top:8px;font-size:.9rem;padding:8px 10px}
 .redo{font-size:.82rem;color:var(--c5);font-weight:500}
 .addrow{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:4px}
@@ -106,6 +112,9 @@ const STAGES=[
 ];
 const HOLD=["العضو العلمي","العضو التقني","المسؤول التقني","مسؤول المادة للتدقيق","","التعديل"];
 const PUB=4,REDO=5;
+const LATE_DAYS=4;
+const daysSince=d=>Math.floor((Date.now()-new Date(d).getTime())/864e5);
+const isLate=i=>i.stage!==PUB&&daysSince(i.since)>=LATE_DAYS;
 const KINDS=[
   ["lecture","🔷 القسم النظري","تم رفع","محاضرة 3"],
   ["practical","🔷 القسم العملي","تم رفع","عملي 1"],
@@ -215,6 +224,20 @@ function showReport(list){
   document.body.appendChild(ov);
 }
 
+function showLate(list){
+  list.sort((a,b)=>new Date(a.i.since)-new Date(b.i.since));
+  const ov=el("div",{className:"ov",onclick:e=>{if(e.target===ov)ov.remove()}},[
+    el("div",{className:"sheet"},[el("h2",{textContent:"⏰ ملفات متأخرة ("+LATE_DAYS+" أيام أو أكتر)"})].concat(
+      list.map(({s,i})=>el("button",{className:"lrow",onclick:()=>{ov.remove();showDetail(s)}},[
+        el("strong",{textContent:s.name+" · "+i.name}),
+        el("div",{className:"since late",textContent:"واقفة عند "+HOLD[i.stage]+" من "+daysSince(i.since)+" يوم"})
+      ])),
+      [el("button",{className:"link",textContent:"إغلاق",onclick:()=>ov.remove()})]
+    ))
+  ]);
+  document.body.appendChild(ov);
+}
+
 function showList(){
   cur=null;
   const all=subjects.flatMap(s=>s.items);
@@ -224,13 +247,16 @@ function showList(){
     el("h1",{textContent:"المواد"}),
     el("div",{className:"stats"},[stat(all.length,"ملف","",0),stat(pub,"مرفوع","ok",.08),stat(redo,"للتعديل","warn",.16)])
   ]);
+  const lateAll=subjects.flatMap(s=>s.items.filter(isLate).map(i=>({s,i})));
+  if(lateAll.length)wrap.appendChild(el("button",{className:"panel alert",onclick:()=>showLate(lateAll)},[el("strong",{textContent:"⏰ ملفات متأخرة"}),el("span",{className:"chip",textContent:lateAll.length})]));
   if(!subjects.length)wrap.appendChild(el("p",{className:"hint",textContent:"ما في مواد ظاهرة لحسابك لسا. اطلب من الأدمن يربط مادة بحسابك."}));
   subjects.forEach((s,idx)=>{
     const its=s.items.slice().sort((a,b)=>a.id-b.id);
     const p=its.filter(i=>i.stage===PUB).length;
+    const late=its.filter(isLate).length;
     const card=el("button",{className:"panel subj",onclick:()=>showDetail(s)},[
-      el("div",{className:"top"},[el("h2",{textContent:s.name}),s.lead_id===me.id?el("span",{className:"badge",textContent:"مادتك"}):null]),
-      el("div",{className:"cells"},its.map((i,k)=>{const c=el("span",{className:"cell s"+i.stage,title:i.name});c.style.setProperty("--d",(idx*.06+k*.03)+"s");return c})),
+      el("div",{className:"top"},[el("h2",{textContent:s.name}),el("span",{},[late?el("span",{className:"chip",textContent:"⏰ "+late}):null," ",s.lead_id===me.id?el("span",{className:"badge",textContent:"مادتك"}):null])]),
+      el("div",{className:"cells"},its.map((i,k)=>{const c=el("span",{className:"cell s"+i.stage+(isLate(i)?" late":""),title:i.name});c.style.setProperty("--d",(idx*.06+k*.03)+"s");return c})),
       el("div",{className:"cap",textContent:its.length?(p+" من "+its.length+" مرفوعة"):"ما في ملفات لسا"})
     ]);
     card.style.animationDelay=(.2+idx*.06)+"s";
@@ -257,7 +283,9 @@ function itemCard(it,edit){
   function paint(pulse){
     label.textContent=STAGES[it.stage][0]+" "+STAGES[it.stage][1];
     label.style.color=it.stage===REDO?"var(--c5)":"";
-    since.textContent=it.stage===PUB?"":"من "+fmt(it.since);
+    const late=isLate(it);
+    since.className="since"+(late?" late":"");
+    since.textContent=it.stage===PUB?"":"من "+fmt(it.since)+(late?" · متأخر "+daysSince(it.since)+" يوم":"");
     steps.textContent="";
     for(let i=0;i<=PUB;i++){
       const on=it.stage!==REDO&&i<=it.stage;
