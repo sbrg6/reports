@@ -6,9 +6,7 @@ const SHELL = [
   "fx.js",
   "app.js",
   "manifest.json",
-  "icon-192.png",
-  "icon-512.png",
-  "Logo-notext.png"
+  "logo-notext.png"
 ];
 const EXT = /(^|\.)(jsdelivr\.net|googleapis\.com|gstatic\.com)$/;
 
