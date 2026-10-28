@@ -7,6 +7,11 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#08102a">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Blue Bits">
+<script>try{var t=localStorage.getItem("bb_theme"),C={night:"#08102a",ink:"#070b14",gold:"#140e06",vangogh:"#0b1838",team:"#050d19"};if(C[t]){document.documentElement.setAttribute("data-theme",t);document.querySelector("meta[name=theme-color]").content=C[t]}}catch(e){}</script>
 <meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -135,9 +140,44 @@ input,select{width:100%;font:inherit;color:var(--text);background:var(--surface2
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+:root{--soon:#e3c455}
+.app{padding-top:calc(14px + env(safe-area-inset-top,0px))}
+#splash{position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:radial-gradient(700px 480px at 50% 38%,var(--glow),transparent 65%),var(--bg);transition:opacity .45s,visibility .45s}
+#splash.off{opacity:0;visibility:hidden}
+#splash img{width:min(54vw,220px);animation:spIn .7s cubic-bezier(.2,.7,.2,1) both}
+#splash i{width:84px;height:3px;border-radius:9px;background:var(--surface2);overflow:hidden;position:relative}
+#splash i::after{content:"";position:absolute;inset:0;width:40%;border-radius:9px;background:var(--accent);animation:spBar 1.1s ease-in-out infinite alternate}
+@keyframes spIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+@keyframes spBar{from{transform:translateX(-10%)}to{transform:translateX(160%)}}
+.tools{display:flex;gap:8px;margin:0 0 12px}
+.tools input{flex:1;min-width:0}
+.tools .ibtn{width:44px;height:44px;flex:none}
+.subj{position:relative;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--tint,transparent) 17%,var(--surface)),var(--surface) 72%);border-color:color-mix(in srgb,var(--tint,transparent) 34%,var(--border))}
+.subj>*{position:relative;z-index:1}
+.subj .orn{position:absolute;z-index:0;inset-inline-end:-12px;bottom:-16px;width:98px;height:98px;color:var(--tint);opacity:.2;pointer-events:none;transition:transform .5s cubic-bezier(.2,.7,.2,1),opacity .3s}
+.subj:hover .orn{transform:rotate(-9deg) scale(1.1);opacity:.3}
+.subj .avatar{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px color-mix(in srgb,var(--tint) 70%,transparent)}
+.chip.soon{background:var(--soon);color:#1a1405}
+.pip.late{background:var(--danger)}
+.pip.soon{background:var(--soon)}
+.late.soonc{border-color:var(--soon)}
+.item.soon{border-color:var(--soon)}
+.item.lt{border-color:color-mix(in srgb,var(--danger) 65%,var(--border))}
+.cap.soon{color:var(--soon);font-weight:600}
+.card.perf{background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 13%,var(--surface)),var(--surface) 70%)}
+.perf-h{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:6px}
+.cmp{display:grid;grid-template-columns:74px 1fr 24px;align-items:center;gap:8px;font-size:.8rem;color:var(--muted);margin-top:6px}
+.cmp i{display:block;height:7px;border-radius:9px;background:var(--accent);transition:width .6s cubic-bezier(.2,.7,.2,1)}
+.cmp.old i{background:var(--border)}
+.cmp b{color:var(--text);text-align:end}
+.grid.compact{grid-template-columns:1fr;gap:8px}
+.grid.compact .subj{padding:10px 14px;margin:0;border-inline-start:4px solid var(--tint)}
+.grid.compact .pips,.grid.compact .orn{display:none}
 </style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><img alt=""><i></i></div>
 <div id="app" class="app"></div>
 <div id="toast" role="status"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
@@ -170,7 +210,13 @@ const ICONS={
   palette:'<circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="16" cy="10" r="1.2"/>',
   trash:'<path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15"/>',
   gear:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
-  copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'
+  copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  rows:'<path d="M4 6h16M4 12h16M4 18h16"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  link:'<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
+  chat:'<path d="M21 12a9 9 0 0 1-13.4 7.8L3 21l1.3-4.4A9 9 0 1 1 21 12z"/>',
+  share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>'
 };
 const ic=(n,s=18)=>'<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICONS[n]||"")+'</svg>';
 
@@ -196,6 +242,8 @@ function openSheet(title,nodes){
 function closeSheets(){document.querySelectorAll(".ov").forEach(o=>o.remove())}
 
 const app=document.getElementById("app");
+{const si=document.querySelector("#splash img");if(si)si.src=LOGO}
+const hideSplash=()=>{const x=document.getElementById("splash");if(x){x.classList.add("off");setTimeout(()=>x.remove(),500)}};
 let sb,me=null,prof=null,subjects=[],cur=null,profiles={};
 const LATE_SEVERE=7;
 const p2=n=>String(n).padStart(2,"0");
@@ -269,7 +317,11 @@ async function sendGroup(btn){
 }
 
 function applyTheme(id){
-  document.documentElement.setAttribute("data-theme",THEMES.some(t=>t.id===id)?id:"night");
+  const t=THEMES.some(x=>x.id===id)?id:"night";
+  document.documentElement.setAttribute("data-theme",t);
+  try{localStorage.setItem("bb_theme",t)}catch(e){}
+  const m=document.querySelector("meta[name=theme-color]");
+  if(m)m.content=getComputedStyle(document.documentElement).getPropertyValue("--bg").trim()||"#08102a";
 }
 async function loadTheme(){
   const {data}=await sb.from("user_prefs").select("theme").eq("user_id",me.id).maybeSingle();
@@ -290,6 +342,8 @@ async function afterLogin(){
   await loadTheme();
   await Promise.all([loadSubjects(),loadProfiles()]);
   showList();
+  const dl=/^#s([\w-]+)$/.exec(location.hash);
+  if(dl){const x=subjects.find(v=>String(v.id)===dl[1]);if(x)showDetail(x)}
 }
 async function loadSubjects(){
   const {data,error}=await sb.from("subjects").select("id,name,lead_id,items(id,kind,name,stage,note,since)").order("name");
@@ -314,6 +368,7 @@ function topbar(){
   return el("div",{className:"top"},[el("div",{className:"logo"},[el("img",{src:LOGO,alt:"Blue Bits"})]),who]);
 }
 function mount(node,noTop){
+  hideSplash();
   app.textContent="";
   if(!noTop)app.appendChild(me?topbar():el("div",{className:"top"},[el("div",{className:"logo"},[el("img",{src:LOGO,alt:"Blue Bits"})])]));
   app.appendChild(node);
@@ -351,11 +406,71 @@ function showLogin(){
   mount(stage,true);
 }
 
+const MO={
+atom:'<circle cx="12" cy="12" r="1.8"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/>',
+flask:'<path d="M9 3h6M10 3v6L4.5 19a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 9V3M7.5 15h9"/><circle cx="11" cy="18" r=".8"/><circle cx="14" cy="17" r=".6"/>',
+drop:'<path d="M12 3s6.5 6.6 6.5 11a6.5 6.5 0 0 1-13 0C5.5 9.6 12 3 12 3zM9 15a3 3 0 0 0 3 3"/>',
+bone:'<path d="M8.6 15.4 15.4 8.6" stroke-width="2.6"/><circle cx="6" cy="16" r="2.2"/><circle cx="8" cy="18" r="2.2"/><circle cx="16" cy="6" r="2.2"/><circle cx="18" cy="8" r="2.2"/>',
+cell:'<circle cx="12" cy="12" r="9"/><circle cx="9.5" cy="10.5" r="3"/><circle cx="15.5" cy="15.5" r="1.5"/><circle cx="15.5" cy="8" r=".8"/>',
+pulse:'<path d="M2 12h5l2.5-7 4 14 2.5-7H22"/>',
+dna:'<path d="M6 2c0 6 12 6 12 10s-12 4-12 10M18 2c0 6-12 6-12 10s12 4 12 10M8.2 5.5h7.6M8.2 18.5h7.6M6 12h12"/>',
+leaf:'<path d="M5 21C5 11 11 4 20 4c0 9-6 15-15 17zM5 21 14 12"/>',
+virus:'<circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/>',
+shield:'<path d="M12 3 4.5 6v5.5c0 4.5 3.2 8 7.5 9.5 4.3-1.5 7.5-5 7.5-9.5V6z"/><path d="m8.8 12 2.3 2.3 4.2-4.6"/>',
+pill:'<rect x="2.5" y="8" width="19" height="8" rx="4" transform="rotate(-40 12 12)"/><path d="M12 8v8" transform="rotate(-40 12 12)"/>',
+scope:'<path d="M6 21h12M9 21c0-2.5 2-4 5-4M14 17a5.5 5.5 0 0 0 0-9M9.2 3.6l3.4 1.6-2.4 5.6-3.4-1.6zM10.9 8.4l1.9.9"/>',
+tooth:'<path d="M7.5 3C4 3 3.5 6.5 4.5 10c.9 3 1.7 5 2.2 8 .3 2.2 1.6 3.2 2.6.6.5-1.3.9-3 2.7-3s2.2 1.7 2.7 3c1 2.6 2.3 1.6 2.6-.6.5-3 1.3-5 2.2-8 1-3.5.5-7-3-7-2 0-3 1-4.5 1S9.5 3 7.5 3z"/>',
+brain:'<path d="M9.5 4A3.2 3.2 0 0 0 6.3 7a3.2 3.2 0 0 0-2 5.2A3.4 3.4 0 0 0 7 17.6 3 3 0 0 0 12 19V5.2A3 3 0 0 0 9.5 4zM14.5 4a3.2 3.2 0 0 1 3.2 3 3.2 3.2 0 0 1 2 5.2 3.4 3.4 0 0 1-2.7 5.4A3 3 0 0 1 12 19M8.5 9.5c1 0 1.5.5 1.5 1.5M15.5 9.5c-1 0-1.5.5-1.5 1.5"/>',
+sigma:'<path d="M18 4H6l7 8-7 8h12"/>',
+bars:'<path d="M4 20v-8M9.5 20V5M15 20v-6M20.5 20V9M2 20.5h20"/>',
+code:'<path d="m8 7-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/>',
+en:'<text x="12" y="17.5" text-anchor="middle" font-size="15" font-weight="700" font-family="serif" fill="currentColor" stroke="none">Aa</text>',
+ar:'<text x="12" y="19" text-anchor="middle" font-size="21" font-weight="700" font-family="IBM Plex Sans Arabic,serif" fill="currentColor" stroke="none">ع</text>',
+temple:'<path d="M2 9 12 3l10 6zM5 21V10M9.5 21V10M14.5 21V10M19 21V10M2 21.5h20"/>',
+globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3.2 3 3.2 15 0 18M12 3c-3.2 3-3.2 15 0 18"/>',
+cross:'<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>',
+hex:'<path d="M12 2.5 20.5 7.2v9.6L12 21.5l-8.5-4.7V7.2z"/><path d="M12 7l4.3 2.4v4.7L12 16.5l-4.3-2.4V9.4z"/>'
+};
+const RULES=[
+[/كيمياء حيوي|biochem/,"drop",350],[/فيزيولوج|وظائف|physiol/,"pulse",345],[/فيزياء|physic/,"atom",215],[/كيمياء|chem|عضوي/,"flask",165],
+[/تشريح|anat|عظام/,"bone",28],[/نسج|خليه|خلوي|جنين|histo|cyto|embryo|cell/,"cell",285],[/وراث|جين|جزيئ|genet|molec/,"dna",262],
+[/جراثيم|مكروب|فيروس|طفيل|micro|virol|parasit|bacter/,"virus",95],[/مناع|immun/,"shield",200],[/دوائ|صيدل|عقار|pharm|drug/,"pill",330],
+[/مرضي|امراض|patho/,"scope",18],[/اسنان|(^| )فم|dent|oral/,"tooth",188],[/عصب|دماغ|نفس|neuro|psych|brain/,"brain",308],
+[/احصاء|stat|احتمال/,"bars",42],[/رياضي|تفاضل|تكامل|جبر|math|calcul|algebra/,"sigma",250],[/حاسوب|برمج|معلوماتي|computer|program|code|algorith|informat/,"code",205],
+[/انكليز|انجليز|english/,"en",225],[/عربي|نحو|بلاغ|arabic/,"ar",45],[/تاريخ|history|قانون|law|اخلاق|ethic|حقوق/,"temple",35],
+[/جغراف|بيئ|صحه عامه|وبائ|geograph|environ|epidem|public health/,"globe",175],[/احياء|بيولوج|نبات|حيوان|تغذي|biolog|botan|zool|nutri/,"leaf",130],
+[/سريري|جراح|باطن|اسعاف|clinic|surg|medic|(^| )طب/,"cross",355]
+];
+const norm=t=>(t||"").toLowerCase().replace(/[\u064B-\u0652\u0640]/g,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي").replace(/ة/g,"ه");
+function decor(name){const n=norm(name);for(const[r,m,h]of RULES)if(r.test(n))return{m,h};let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%360;return{m:"hex",h}}
+const isSoon=i=>{if(i.stage===PUB)return false;const d=daysSince(i.since);return d>=LATE_DAYS-1&&d<LATE_DAYS};
+const lsGet=(k,d)=>{try{return localStorage.getItem(k)||d}catch(e){return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+let qStr="",compact=lsGet("bb_compact","0")==="1";
+const orn=m=>el("span",{className:"orn",innerHTML:'<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+MO[m]+'</svg>'});
+const prio=s=>{const L=s.items.filter(isLate);return (L.some(i=>sevOf(i)===2)?1e4:0)+L.length*100+s.items.filter(isSoon).length*10+s.items.filter(i=>i.stage===REDO).length};
+function subjCard(s){
+  const d=decor(s.name),its=s.items.slice().sort((a,b)=>a.id-b.id),p=its.filter(i=>i.stage===PUB).length,L=its.filter(isLate),S=its.filter(isSoon),right=[];
+  if(L.length)right.push(el("span",{className:"chip"+(L.some(i=>sevOf(i)===2)?" sev":""),textContent:L.length+" متأخر"}));
+  if(S.length)right.push(el("span",{className:"chip soon",textContent:S.length+" قريب"}));
+  if(s.lead_id===me.id)right.push(el("span",{className:"badge",textContent:"مادتك"}));
+  if(s.lead_id)right.push(avatar(s.lead_id));
+  const b=el("button",{className:"card subj",onclick:()=>showDetail(s)},[
+    orn(d.m),
+    el("div",{className:"row"},[el("h2",{textContent:s.name}),el("div",{className:"row-right"},right)]),
+    its.length?el("div",{className:"pips"},its.map(i=>el("span",{className:"pip"+(i.stage===PUB?" on":i.stage===REDO?" redo":isLate(i)?" late":isSoon(i)?" soon":"")}))):null,
+    el("div",{className:"cap",textContent:its.length?(p+" من "+its.length+" مرفوعة"):"ما في ملفات لسا"})
+  ]);
+  b.style.setProperty("--tint","hsl("+d.h+" 55% 62%)");
+  return b;
+}
+
 function showList(back){
   cur=null;
   const all=subjects.flatMap(s=>s.items);
   const pub=all.filter(i=>i.stage===PUB).length,redo=all.filter(i=>i.stage===REDO).length;
   const late=subjects.flatMap(s=>s.items.filter(isLate).map(i=>({s,i})));
+  const soon=subjects.flatMap(s=>s.items.filter(isSoon).map(i=>({s,i})));
   const stat=(n,l,c)=>el("div",{className:"stat "+(c||"")},[el("b",{textContent:String(n)}),el("span",{textContent:l})]);
   const pct=all.length?Math.round(pub/all.length*100):0;
   const kids=[
@@ -367,6 +482,16 @@ function showList(back){
       el("div",{className:"progress-track"},[el("div",{className:"progress-fill",style:"width:"+pct+"%"})])
     ])
   ];
+  const mine=subjects.filter(s=>s.lead_id===me.id);
+  if(mine.length){
+    const its=mine.flatMap(s=>s.items),up=(a,b)=>its.filter(i=>i.stage===PUB&&daysSince(i.since)>=a&&daysSince(i.since)<b).length;
+    const w=up(0,7),l=up(7,14),d=w-l,m=Math.max(w,l,1);
+    const bar=(t,n,c)=>el("div",{className:"cmp "+c},[el("span",{textContent:t}),el("i",{style:"width:"+Math.max(n/m*100,3)+"%"}),el("b",{textContent:String(n)})]);
+    kids.push(el("div",{className:"card perf"},[
+      el("div",{className:"perf-h"},[el("span",{textContent:"أداؤك"}),el("span",{className:"cap"+(d<0?" sev":""),textContent:d>0?"▲ أكتر بـ"+d+" من الأسبوع الماضي":d<0?"▼ أقل بـ"+(-d)+" من الأسبوع الماضي":"مثل الأسبوع الماضي"})]),
+      bar("هالأسبوع",w,"now"),bar("اللي قبله",l,"old")
+    ]));
+  }
   if(late.length){
     const severe=late.some(({i})=>sevOf(i)===2);
     kids.push(el("button",{className:"card late",onclick:()=>showLate(late)},[
@@ -374,6 +499,9 @@ function showList(back){
       el("span",{className:"chip"+(severe?" sev":"")},[document.createTextNode(String(late.length))])
     ]));
   }
+  if(soon.length)kids.push(el("button",{className:"card late soonc",onclick:()=>showLate(soon,"ملفات اقترب موعدها")},[
+    el("span",{innerHTML:ic("alert",18)}),el("span",{textContent:"اقترب موعدها"}),el("span",{className:"chip soon",textContent:String(soon.length)})
+  ]));
   const acts=[];
   if(isAdmin())acts.push(B("primary","send","إرسال للمجموعة",e=>sendGroup(e.currentTarget)));
   if(subjects.length)acts.push(B("ghost","doc","تقرير الأسبوع",()=>showReport(subjects)));
@@ -386,26 +514,26 @@ function showList(back){
   if(acts.length)kids.push(el("div",{className:"btns"},acts));
   if(!subjects.length)kids.push(emptyState("box","ما في مواد ظاهرة لحسابك لسا","اطلب من الأدمن يربط مادة بحسابك."));
   const grid=el("div",{className:"grid"});
-  subjects.forEach(s=>{
-    const its=s.items.slice().sort((a,b)=>a.id-b.id);
-    const p=its.filter(i=>i.stage===PUB).length;
-    const lateItems=its.filter(isLate);
-    const severe=lateItems.some(i=>sevOf(i)===2);
-    const right=[];
-    if(lateItems.length)right.push(el("span",{className:"chip"+(severe?" sev":""),textContent:lateItems.length+" متأخر"}));
-    if(s.lead_id===me.id)right.push(el("span",{className:"badge",textContent:"مادتك"}));
-    if(s.lead_id)right.push(avatar(s.lead_id));
-    grid.appendChild(el("button",{className:"card subj",onclick:()=>showDetail(s)},[
-      el("div",{className:"row"},[el("h2",{textContent:s.name}),el("div",{className:"row-right"},right)]),
-      its.length?el("div",{className:"pips"},its.map(i=>el("span",{className:"pip"+(i.stage===PUB?" on":i.stage===REDO?" redo":"")}))):null,
-      el("div",{className:"cap",textContent:its.length?(p+" من "+its.length+" مرفوعة"):"ما في ملفات لسا"})
-    ]));
-  });
+  const drawGrid=()=>{
+    grid.textContent="";grid.className="grid"+(compact?" compact":"");
+    const q=norm(qStr.trim());
+    const list=subjects.filter(s=>!q||norm(s.name).includes(q)).sort((a,b)=>prio(b)-prio(a)||(b.lead_id===me.id)-(a.lead_id===me.id)||a.name.localeCompare(b.name,"ar"));
+    list.forEach(s=>grid.appendChild(subjCard(s)));
+    if(q&&!list.length)grid.appendChild(emptyState("search","ما في مادة بهالاسم","جرّب كلمة تانية."));
+  };
+  if(subjects.length){
+    const tb=IB(compact?"grid":"rows",compact?"عرض البطاقات":"عرض مضغوط",()=>{
+      compact=!compact;lsSet("bb_compact",compact?"1":"0");
+      tb.innerHTML=ic(compact?"grid":"rows",17);tb.title=compact?"عرض البطاقات":"عرض مضغوط";drawGrid();
+    });
+    kids.push(el("div",{className:"tools"},[el("input",{type:"search",placeholder:"ابحث عن مادة…",value:qStr,oninput:e=>{qStr=e.target.value;drawGrid()}}),tb]));
+  }
+  drawGrid();
   kids.push(grid);
   mount(el("div",{className:"view"+(back?" dir-back":"")},kids));
 }
 
-function showLate(list){
+function showLate(list,title){
   closeSheets();
   list.sort((a,b)=>new Date(a.i.since)-new Date(b.i.since));
   const rows=list.map(({s,i})=>{
@@ -415,18 +543,20 @@ function showLate(list){
       el("div",{className:"cap"+(sev?" sev":""),textContent:"واقفة "+STAGES[i.stage]+" من "+daysSince(i.since)+" يوم"})
     ]);
   });
-  openSheet("ملفات متأخرة ("+LATE_DAYS+" أيام أو أكتر)",rows);
+  openSheet(title||"ملفات متأخرة ("+LATE_DAYS+" أيام أو أكتر)",rows);
 }
 
 function showReport(list){
   closeSheets();
   const text=previewText(list);
-  const nodes=[el("pre",{className:"pre",textContent:text})];
+  const cp=async(v,m)=>{try{await navigator.clipboard.writeText(v);toast(m)}catch(e){toast("تعذّر النسخ")}};
   const btns=[];
   if(list===subjects&&isAdmin())btns.push(B("primary","send","إرسال للمجموعة",e=>sendGroup(e.currentTarget)));
-  btns.push(B("ghost","copy","نسخ",async()=>{try{await navigator.clipboard.writeText(text);toast("تم النسخ ✓")}catch(e){toast("تعذّر النسخ")}}));
-  nodes.push(el("div",{className:"btns"},btns));
-  openSheet("تقرير الأسبوع",nodes);
+  btns.push(B("ghost","copy","نسخ",()=>cp(text,"تم النسخ ✓")));
+  btns.push(B("ghost","chat","واتساب",()=>window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank","noopener")));
+  if(list!==subjects&&list.length===1)btns.push(B("ghost","link","نسخ رابط",()=>cp(location.origin+location.pathname+"#s"+list[0].id,"تم نسخ الرابط ✓")));
+  if(navigator.share)btns.push(B("ghost","share","مشاركة",()=>navigator.share({text}).catch(()=>{})));
+  openSheet("تقرير الأسبوع",[el("pre",{className:"pre",textContent:text}),el("div",{className:"btns"},btns)]);
 }
 
 async function save(it,patch){
@@ -445,7 +575,8 @@ function itemCard(it,edit){
   const card=el("div",{className:"item"});
   const render=()=>{
     card.textContent="";
-    const redo=it.stage===REDO,late=isLate(it);
+    const redo=it.stage===REDO,late=isLate(it),soon=isSoon(it);
+    card.classList.toggle("soon",soon);card.classList.toggle("lt",late);
     const head=el("div",{className:"item-h"});
     if(edit){
       const nm=el("input",{className:"name-in",value:it.name});
@@ -475,7 +606,7 @@ function itemCard(it,edit){
     const sev=late&&sevOf(it)===2;
     card.append(head,stepper,
       el("div",{className:"stage"+(redo?" redo":""),textContent:redo?"رجعت للتعديل":STAGES[it.stage]}),
-      el("div",{className:"cap"+(sev?" sev":""),textContent:it.stage===PUB?"":"من "+fmt(it.since)+(late?" · متأخر "+daysSince(it.since)+" يوم":"")})
+      el("div",{className:"cap"+(sev?" sev":soon?" soon":""),textContent:it.stage===PUB?"":"من "+fmt(it.since)+(late?" · متأخر "+daysSince(it.since)+" يوم":soon?" · اقترب الموعد ⏳":"")})
     );
     if(edit){
       if(!redo)card.appendChild(el("button",{className:"redo-btn",textContent:"↩ رجّعه للتعديل",onclick:async()=>{if(await save(it,{stage:REDO}))render()}}));

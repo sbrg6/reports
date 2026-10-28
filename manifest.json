@@ -1,13 +1,34 @@
 {
-  "name": "Blue Bits",
-  "short_name": "Blue Bits",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#08102a",
-  "theme_color": "#08102a",
-  "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ]
+ "name": "متابعة المواد · Blue Bits",
+ "short_name": "Blue Bits",
+ "description": "متابعة ملفات المواد ومراحلها بمكان واحد",
+ "lang": "ar",
+ "dir": "rtl",
+ "id": "./",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#08102a",
+ "theme_color": "#08102a",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
 }
