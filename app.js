@@ -1,12 +1,19 @@
 const SB_URL = "https://ejjhojeajjjbaczkcfwc.supabase.co";
 const SB_KEY = "sb_publishable__IyRTTMoM-xHtvGDU1wvnw_-5rryX9t";
-const LOGO = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1Nzg3IDE3MjUiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMTI3NSIgeTI9IjAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMzZTQzOTQiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyMjc2YmIiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBmaWxsPSJ1cmwoI2cpIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik02MzIgNDc3IEw2MTIgNDg0IEwyMDAgNzIyIEwxODkgNzM1IEwxODMgNzUwIEwxODMgODM0IEwxODMgODQyIEwy0DMgODQxIEw2MTQgNjAwIEw2MzE1OTQgQTY1NCA1OTYgTDk2OSA3NzcgTDk4NSA3OTMgTDk5MiA4MTEgTDk5MiAxMTgwIExGOTggMTE5MiBMOTcxIDEyMTIgTDY2MSAxMzkxIExGNjcgMTM5NiBMNjIxIDEzOTQgTDMwOCAxMjE0IExGOTQgMTIwMiBMMjg0IDExODEgTDI4NCA5MzUgTDI3OSA5MjQgTDI2OCA5MjIgTDE5OSA5NjIgTDE4OCA5NzYgTDE4MyA5ODkgTDE4MyAxMjQwIExGOTQgMTI2MiBMMjA4IDEyNzMgTDYxNyAxNTA5IExGNjAgMTUxMyBMNjQ2IDE1MTMgTDY2NCAxNTA2IExDMDc4IDEyNjYgTDEwODYgMTI1NiBMMTA5MyAxMjM4IExDMTkzIDc1MiBMMTA4MyA3MzAgTDEwNjkgNzE4IExDNjAgNDgyIExDNDQgNDc3Wk0yNzEgMCBMMjAyIDM5IExDOTAgNTIgTDE4MyA2OSBMMTgzIDYxNiBMMTg5IDYyNCBMMTk4IDYyNSBMNjE0IDM4OSBMNjI3IDM4NCBMNjQzIDM4MyBMNTY1IDM5MSBMMTE1NSA2NzQgTDExNjcgNjg3IExDMTc0IDcwMyBMMTE3NSAxMjgwIExDMTY5IDEzMDAgTDExNTQgMTMxNyBMNjYyIDE2MDEgTDY0NSAxNjA3IExGNjAgMTYwNCBMMTI1IDEzMTkgTDExMyAxMzA5IExEMDQgMTI5NCBMMTAxIDEyODMgTDEwMCAxMTUgTDk0IDEwOSBMODIgMTEwIExDMTEgMTQ2IExDNyAxNjEgTDAgMTgwIEwwIDEzNDIgTDMgMTM1MyBMMTQgMTM3MCBMNjA5IDE3MTUgTDYyNyAxNzIzIExGNjkgMTcyMyBMMTI1NyAxMzc0IExDNzEgMTM1NyBMMTI3NSAxMzQ2IExDNzUgNjQ1IExDMjY1IDYyNCBMMTI1MiA2MTMgTDY2OCAyNzYgTDY0NyAyNjcgTDYyOSAyNjcgTDYxMyAyNzMgTDMwNiA0NTEgTDI5NyA0NTQgTDI5MCA0NTIgTDI4NCA0NDMgTDI4NCAxMyBMMjgxIDVaIi8+PHBhdGggZmlsbD0iI2U4ZjBmZiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNNTQ5MiA1NzcgTDUzODUgNjY0IEw1Mzg1IDgxNyBMNTY1OCA5NzEgTDU2NTkgMTAwNCBMNTYxOCAxMDM0IEw1NTMxIDEwMzQgTDU0MjEgOTU0IEw1MzU0IDEwNDYgTDU0OTMgMTE0NyBMNTY1NyAxMTQ3 BMDU3NzMgMTA2MiBMNTc3MyA5MDYgTDU0OTggNzQ5 LDU0OTggNzE4 LDU1MzEgNjkx LDU2MTggNjkx LDU3MTQgNzcx LDU3ODYgNjgz LDU2NTcgNTc3Wk00ODM5IDU3NyBMNDgzOSA2OTEgTDUwMDIgNjky LDUwMDIgMTE0NyBMNTExNSAxMTQ3 BMDUxMTYgNjky LDUyNzcgNjkx LDUyNzggNTc4Wk00NjAwIDU3NyBMNDU5OSAxMTQ3 BMDU3MTIgMTE0NyBMNDcxMiA1NzhaTTQwNDUgNTc3 BMNDA0NCAxMTQ2 LDUzNjggMTE0Ny BMNDQ4NCAxMDYy BMNDQ4NCA5MTIgTDQ0MjEgODUy BMNDQ0OSA4MDMgTDQ0NDkgNjY0 BMNDMzNyA1NzdaTTQxNTggOTIw BMNDMyNiA5MTkgTDQzNzAgOTYw BMNDM3MCAxMDA0 TDMzMjkgMTAzNCBMNDE2MCAxMDM0Wk00MTU4IDY5Mi BMNDMwMCA2OTEgTDQzMzYgNzIw BMNDMzNiA3NzIgTDQzMTUgODA2 BMNDE2MCA4MDZaTTMyMjkgNTc3 LDMyMjcgMTA2MCBMMDMzNiAxMTQ3 LDM2MjggMTE0NyBMMzYyNyAxMDMz LDMzNzcgMTAzNCBMMzM0MSAxMDA1 LDMzNDIgOTE5 LDM1NTYgOTE5 LDM1NTYgODA2 LDMzNDMgODA2 LDMzNDEgNjky LDM2MjcgNjkx LDM2MjggNTc4Wk0yNjc0IDU3NyBMMjY3MyAxMDY0 LDI3OTMgMTE0NyBMMjk5MyAxMTQ3 LDMxMTMgMTA2MyBMMzExMiA1NzcgTDI5OTkgNTc4 LDI5OTkgMTAwNCBMMjk1NSAxMDM0 LDI4MzEgMTAzNCBMMjc4NiAxMDAz LDI3ODYgNTc3Wk0yMjAxIDU3NyBMMjIwMSAxMDYx LDIzMDUgMTE0NyBMMjU1OCAxMTQ3 LDI1NTcgMTAzMyBMMjM0NyAxMDM0 LDIzMTQgMTAwNiBMMjMxNCA1NzhaTDE2NDcgNTc3 LDE2NDYgMTE0NyBMMTk3MSAxMTQ2 LDIwODUgMTA2MyBMMjA4NSA5MTEgTDIwMjIgODUy LDIwNTAgODA1 LDIwNTAgNjYz LDE5MzkgNTc3Wk0xNzU5IDkyMCBMMTkyOCA5MTkgTDE5NzIgOTYxIEwxOTcyIDEwMDQgTDE5MzEgMTAzNCBMMTc2MSAxMDM0Wk0xNzU5IDY5MiBMMTkwMSA2OTEgTDE5MzcgNzE5 IEwxOTM3IDc3MyBMMTkxNyA4MDYgTDE3NjEgODA2WiIvPjwvc3ZnPg==";
+const LOGO = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1Nzg3IDE3MjUiPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMTI3NSIgeTI9IjAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMzZTQzOTQiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyMjc2YmIiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cGF0aCBmaWxsPSJ1cmwoI2cpIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik02MzIgNDc3IEw2MTIgNDg0IEwyMDAgNzIyIEwxODkgNzM1IEwxODMgNzUwIEwxODMgODM0IEwxODMgODQyIEwyMDMgODQxIEw2MTQgNjAwIEw2MzEgNTk0IEw2NTQgNTk2IEw5NjcgNzc3IEw5ODUgNzk3IEw5OTIgODExIEw5OTIgMTE4MCBMOTg4IDExOTIgTDk3MSAxMjEyIEw2NjEAxMzkxIEw2NDcgMTM5NiBMNjIxIDEzOTQgTDMwOCAxMjE0IExGOTQgMTIwMiBMMjg0IDExODEgTDI4NCA5MzUgTDI3OSA5MjQgTDI2OCA5MjIgTDE5OSA5NjIgTDE4OCA5NzYgTDE4MzA5ODkgTDE4MyAxMjQwIExGOTQgMTI2MiBMMjA4IDEyNzMgTDYxNyAxNTA5IExGNjAgMTUxMyBMNjQ2IDE1MTMgTDY2NCAxNTA2IExDMDc4IDEyNjYgTDEwODYgMTI1NiBMMTA5MyAxMjM4IExDNzczIDc1MiBMMTA4MyA3MzAgTDEwNjkgNzE4IExDNjAgNDgyIExDNDQgNDc3Wk0yNzEgMCBMMjAyIDM5IExDOTAgNTIgTDE4MyA2OSBMMTgzIDYxNiBMMTg5IDYyNCBMMTk4IDYyNSBMNjE0IDM4OSBMNjI3IDM4NCBMNjQzIDM4MyBMNTY1IDM5MSBMMTE1NSA2NzQgTDExNjcgNjg3IExDMTc4IDcwMyBMMTE3NSAxMjgwIExDMTY5IDEzMDAgTDExNTQgMTMxNyBMNjYyIDE2MDEgTDY0NSAxNjA3IExGNjAgMTYwNCBMMTI1IDEzMTkgTDExMyAxMzA5IExEMDQgMTI5NCBMMTAxIDEyODMgTDEwMCAxMTUgTDk4IDEwOSBMODIgMTEwIExDMTEgMTQ2IExDNyAxNjEgTDAgMTgwIEwwIDEzNDIgTDMgMTM1MyBMMTQgMTM3MCBMNjA5IDE3MTUgTDYyNyAxNzIzIExGNjkgMTcyMyBMMTI1NyAxMzc0IExDNzEgMTM1NyBMMTI3NSAxMzQ2IExDNzUgNjQ1IExDMjY1IDYyNCBMMTI1MiA2MTMgTDY2OCAyNzYgTDY0NyAyNjcgTDYyOSAyNjcgTDYxMyAyNzMgTDMwNiA0NTEgTDI5NyA0NTQgTDI5MCA0NTIgTDI4NCA0NDMgTDI4NCAxMyBMMjgxIDVaIi8+PHBhdGggZmlsbD0iI2U4ZjBmZiIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNNTQ5MiA1NzcgTDUzODUgNjY0IEw1Mzg1IDgxNyBMNTY1OCA5NzEgTDU2NTkgMTAwNCBMNTYxOCAxMDM0IEw1NTMxIDEwMzQgTDU0MjEgOTU0IEw1MzU0IDEwNDYgTDU0OTMgMTE0NyBMNTY1NyAxMTQ3 BMDU3NzMgMTA2MiBMNTc3MyA5MDYgTDU0OTggNzQ5 LDU0OTggNzE4 LDU1MzEgNjkx LDU2MTggNjkx LDU3MTQgNzcx LDU3ODYgNjgz LDU2NTcgNTc3Wk00ODM5IDU3NyBMNDgzOSA2OTEgTDUwMDIgNjky LDUwMDIgMTE0NyBMNTExNSAxMTQ3 BMDUxMTYgNjky LDUyNzcgNjkx LDUyNzggNTc4Wk00NjAwIDU3NyBMNDU5OSAxMTQ3 BMDU3MTIgMTE0NyBMNDcxMgA1NzhaTTQwNDUgNTc3 BMNDA0NCAxMTQ2 LDUzNjggMTE0Ny BMNDQ4NCAxMDYy BMNDQ4NCA5MTIgTDQ0MjEgODUy BMNDQ0OSA4MDMgTDQ0NDkgNjY0 BMNDMzNyA1NzdaTTQxNTggOTIw BMNDMyNiA5MTkgTDQzNzAgOTYw BMNDM3MCAxMDA0 TDMzMjkgMTAzNCBMNDE2MCAxMDM0Wk00MTU4IDY5Mi BMNDMwMCA2OTEgTDQzMzYgNzIw BMNDMzNiA3NzIgTDQzMTUgODA2 BMNDE2MCA4MDZaTTMyMjkgNTc3 LDMyMjcgMTA2MCBMMDMzNiAxMTQ3 LDM2MjggMTE0NyBMMzYyNyAxMDMz LDMzNzcgMTAzNCBMMzM0MSAxMDA1 LDMzNDIgOTE5 LDM1NTYgOTE5 LDM1NTYgODA2 LDMzNDMgODA2 LDMzNDEgNjky LDM2MjcgNjkx LDM2MjggNTc4Wk0yNjc0IDU3NyBMMjY3MyAxMDY0 LDI3OTMgMTE0NyBMMjk5MyAxMTQ3 LDMxMTMgMTA2MyBMMzExMiA1NzcgTDI5OTkgNTc4 LDI5OTkgMTAwNCBMMjk1NSAxMDM0 LDI4MzEgMTAzNCBMMjc4NiAxMDAz LDI3ODYgNTc3Wk0yMjAxIDU3NyBMMjIwMSAxMDYx LDIzMDUgMTE0NyBMMjU1OCAxMTQ3 LDI1NTcgMTAzMyBMMjM0NyAxMDM0 LDIzMTQgMTAwNiBMMzExNCA1NzhaTDE2NDcgNTc3 LDE2NDYgMTE0NyBMMTk3MSAxMTQ2 LDIwODUgMTA2MyBMM2E4NSA5MTEgTDIwMjIgODUy LDIwNTAgODA1 LDIwNTAgNjYz LDE5MzkgNTc3Wk0xNzU5IDkyMCBMMTkyOCA5MTkgTDE5NzIgOTYxIEwxOTcyIDEwMDQgTDE5MzEgMTAzNCBMMTc2MSAxMDM0Wk0xNzU5IDY5MiBMMTkwMSA2OTEgTDE5MzcgNzE5 IEwxOTM3IDc3MyBMMTkxNyA4MDYgTDE3NjEgODA2WiIvPjwvc3ZnPg==";
 
 const STAGES = ["عند العضو العلمي", "عند العضو التقني", "عند المسؤول التقني", "تدقيق مسؤول المادة", "مرفوعة"];
 const STEP_LABELS = ["العلمي", "التقني", "المسؤول التقني", "التدقيق", "مرفوعة"];
 const WHERE = ["متوقف عند العضو العلمي", "متوقف عند العضو التقني", "في مرحلة التدقيق التقني", "في مرحلة التدقيق العلمي", "", "رجع للتعديل"];
 const PUB = 4, REDO = 5, LATE_DAYS = 4;
-const KINDS = [["lecture", "القسم النظري", "تم رفع", "محاضرة 3"], ["practical", "القسم العملي", "تم رفع", "عملي 1"], ["bank", "البنك", "تم تجهيز", "بنك 2"]];
+
+// إضافة الأيقونات الخاصة بكل قسم
+const KINDS = [
+  ["lecture", "القسم النظري", "تم رفع", "محاضرة 3", "book"],
+  ["practical", "القسم العملي", "تم رفع", "عملي 1", "flask"],
+  ["bank", "البنك", "تم تجهيز", "بنك 2", "box"]
+];
+
 const THEMES = [
   { id: "night", name: "نجوم الليل", sw: ["#0f1b3d", "#c9a64b"] },
   { id: "ink", name: "حبر", sw: ["#0d1424", "#b8c4da"] },
@@ -28,6 +35,8 @@ const ICONS = {
   alert: '<path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
   send: '<path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/>',
   doc: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
+  book: '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>',
+  flask: '<path d="M9 3h6M10 3v6L4.5 19a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 9V3M7.5 15h9"/><circle cx="11" cy="18" r=".8"/><circle cx="14" cy="17" r=".6"/>',
   down: '<path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/>',
   box: '<path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4"/>',
   hist: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 3"/>',
@@ -72,7 +81,7 @@ const app = document.getElementById("app");
 { const si = document.querySelector("#splash img"); if (si) si.src = LOGO; }
 const hideSplash = () => { const x = document.getElementById("splash"); if (x) { x.classList.add("off"); setTimeout(() => x.remove(), 500); } };
 
-let sb, me = null, prof = null, subjects = [], cur = null, profiles = {};
+let sb, me = null, prof = null, subjects = [], cur = null, profiles = {}, itemFilter = "all";
 const LATE_SEVERE = 7;
 const p2 = n => String(n).padStart(2, "0");
 const fmt = d => { const x = new Date(d); return p2(x.getDate()) + "/" + p2(x.getMonth() + 1); };
@@ -467,265 +476,4 @@ function itemCard(it, edit) {
     const stepper = el("div", { className: "stepper" });
     STEP_LABELS.forEach((lab, i) => {
       const on = !redo && i <= it.stage;
-      const b = el("button", { className: "step" + (on ? " on" : "") + (!redo && i === it.stage ? " cur" : ""), textContent: lab, disabled: !edit, title: STAGES[i] });
-      b.onclick = async () => {
-        if (await save(it, { stage: i })) {
-          render();
-          card.classList.add(i === PUB ? "flash-ok" : "flash");
-          setTimeout(() => card.classList.remove("flash", "flash-ok"), 700);
-        }
-      };
-      stepper.appendChild(b);
-    });
-    const sev = late && sevOf(it) === 2;
-    card.append(head, stepper,
-      el("div", { className: "stage" + (redo ? " redo" : ""), textContent: redo ? "رجعت للتعديل" : STAGES[it.stage] }),
-      el("div", { className: "cap" + (sev ? " sev" : soon ? " soon" : ""), textContent: it.stage === PUB ? "" : "من " + fmt(it.since) + (late ? " · متأخر " + daysSince(it.since) + " يوم" : soon ? " · اقترب الموعد ⏳" : "") })
-    );
-    if (edit) {
-      if (!redo) card.appendChild(el("button", { className: "redo-btn", textContent: "↩ رجّعه للتعديل", onclick: async () => { if (await save(it, { stage: REDO })) render(); } }));
-      const note = el("input", { className: "note", placeholder: "السبب أو ملاحظة (تظهر بالتقرير)", value: it.note || "" });
-      note.onchange = () => save(it, { note: note.value.trim() });
-      card.appendChild(note);
-    } else if (it.note) card.appendChild(el("div", { className: "cap", textContent: it.note }));
-    if (isAdmin()) card.appendChild(scoreBox(it, render));
-  };
-  render();
-  return card;
-}
-
-function scoreBox(it, onSaved) {
-  const vals = { weight: it.weight || 1, quality: it.quality, timeliness: it.timeliness, accuracy: it.accuracy };
-  const box = el("div", { className: "score-box" });
-  const prev = el("div", { className: "score-preview" });
-  const fields = [["weight", "الوزن", 0.5, 5, 0.5], ["quality", "الجودة", 0, 100, 5], ["timeliness", "الالتزام", 0, 100, 5], ["accuracy", "الدقة", 0, 100, 5]];
-  const inputs = {};
-  fields.forEach(([key, label, min, max, step]) => {
-    const cur = vals[key] == null ? (key === "weight" ? 1 : 50) : vals[key];
-    const num = el("b", { textContent: String(cur) });
-    const rng = el("input", { type: "range", min, max, step, value: cur });
-    rng.oninput = () => { num.textContent = rng.value; calc(); };
-    inputs[key] = rng;
-    box.appendChild(el("div", { className: "score-row" }, [el("span", { textContent: label }), rng, num]));
-  });
-  function calc() {
-    const w = +inputs.weight.value, q = +inputs.quality.value, t2 = +inputs.timeliness.value, a = +inputs.accuracy.value;
-    const pts = Math.round(w * 10 * (q * 0.4 + t2 * 0.3 + a * 0.3) / 100 * 100) / 100;
-    prev.innerHTML = "النقاط المتوقعة: <b>" + pts + "</b>";
-  }
-  calc();
-  box.appendChild(prev);
-  const msg = el("div", { className: "cap" });
-  box.appendChild(el("div", { className: "btns" }, [
-    B("primary", "", "حفظ التقييم", async e => {
-      const b = e.currentTarget; b.disabled = true;
-      const ok = await save(it, { weight: +inputs.weight.value, quality: +inputs.quality.value, timeliness: +inputs.timeliness.value, accuracy: +inputs.accuracy.value });
-      b.disabled = false;
-      if (ok) { msg.textContent = ""; onSaved(); } else msg.textContent = "تعذّر الحفظ";
-    })
-  ]));
-  box.appendChild(msg);
-  return box;
-}
-
-function showDetail(s, fwd) {
-  cur = s;
-  closeSheets();
-  const edit = s.lead_id === me.id;
-  const head = [
-    B("ghost", "", "→ كل المواد", async () => { await loadSubjects(); showList(true); }),
-    el("h1", { textContent: s.name }),
-    el("p", { className: "sub", textContent: edit ? "حدّد المرحلة لكل ملف، وكل تغيير بينحفظ فوراً." : "عرض فقط. التعديل لمسؤول المادة." }),
-    el("div", { className: "btns" }, [B("ghost", "doc", "تقرير المادة", () => showReport([s]))])
-  ];
-  const sections = [];
-  KINDS.forEach(([kind, title, , ph]) => {
-    const its = s.items.filter(i => i.kind === kind).sort((a, b) => a.id - b.id);
-    sections.push(el("div", { className: "section-h" }, [el("h2", { textContent: title }), el("span", { className: "cap", textContent: its.length + " ملف" })]));
-    if (!its.length) sections.push(emptyState(kind === "practical" ? "box" : "doc", kind === "practical" ? "ما في عملي لهالمادة" : "ما في ملفات لسا", edit ? "أضف أول ملف من تحت." : "بينضاف لما يبلّش مسؤول المادة."));
-    its.forEach(it => sections.push(itemCard(it, edit)));
-    if (edit) {
-      const nm = el("input", { placeholder: "اسم الملف (مثال: " + ph + ")" });
-      const add = B("primary", "plus", "إضافة", async () => {
-        const v = nm.value.trim();
-        if (!v) {
-  toast("اكتب اسم الملف أولاً");
-  nm.classList.add("shake");
-  nm.focus();
-  setTimeout(() => nm.classList.remove("shake"), 400);
-  return;
-}
-        const { data, error } = await sb.from("items").insert({ subject_id: s.id, kind, name: v }).select("id,kind,name,stage,note,since").single();
-        if (error) { toast("تعذّرت الإضافة: " + error.message); return; }
-        s.items.push(data);
-        showDetail(s);
-      });
-      sections.push(el("div", { className: "add" }, [nm, add]));
-    }
-  });
-  mount(el("div", { className: "view" + (fwd === false ? "" : " dir-fwd") }, head.concat(sections)));
-}
-
-function showPw() {
-  const a = el("input", { type: "password", placeholder: "كلمة السر الجديدة (6 أحرف أو أكتر)", autocomplete: "new-password" });
-  const b = el("input", { type: "password", placeholder: "أعد كتابتها", autocomplete: "new-password" });
-  const msg = el("p", { className: "msg" });
-  openSheet("تغيير كلمة السر", [a, b, msg, B("primary block", "", "حفظ", async () => {
-    if (a.value.length < 6) { msg.textContent = "كلمة السر لازم تكون 6 أحرف أو أكتر."; return; }
-    if (a.value !== b.value) { msg.textContent = "الكلمتين مو متطابقتين."; return; }
-    msg.textContent = "جاري الحفظ…";
-    const { error } = await sb.auth.updateUser({ password: a.value });
-    if (error) { msg.textContent = "تعذّر الحفظ: " + error.message; return; }
-    closeSheets(); toast("تم تغيير كلمة السر ✓");
-  })]);
-}
-
-function showThemes() {
-  closeSheets();
-  const cur_ = document.documentElement.getAttribute("data-theme") || "night";
-  const grid = el("div", { className: "tgrid" });
-  THEMES.forEach(t => {
-    const card = el("button", {
-      className: "tcard" + (t.id === cur_ ? " on" : ""), onclick: async () => {
-        applyTheme(t.id);
-        grid.querySelectorAll(".tcard").forEach(c => c.classList.remove("on"));
-        card.classList.add("on");
-        const { error } = await sb.from("user_prefs").upsert({ user_id: me.id, theme: t.id });
-        toast(error ? "تعذّر الحفظ: " + error.message : "تم تغيير المظهر ✓");
-      }
-    }, [
-      el("span", { className: "tsw", style: "background:linear-gradient(135deg," + t.sw[0] + " 50%," + t.sw[1] + " 50%)" }),
-      el("span", { textContent: t.name })
-    ]);
-    grid.appendChild(card);
-  });
-  openSheet("المظهر", [grid]);
-}
-
-async function showAdmin() {
-  closeSheets();
-  const { data: pr, error } = await sb.from("profiles").select("id,name,role").order("name");
-  if (error) { toast("تعذّر التحميل: " + error.message); return; }
-  const people = pr || [];
-  const box = el("div");
-  openSheet("إدارة المواد", [box]);
-  const leadSel = val => {
-    const s = el("select");
-    s.appendChild(el("option", { value: "", textContent: "— بدون مسؤول —" }));
-    people.forEach(p => s.appendChild(el("option", { value: p.id, textContent: (p.name || p.id.slice(0, 6)) + (p.role === "admin" ? " (أدمن)" : ""), selected: p.id === val })));
-    return s;
-  };
-  const upd = async (id, patch) => {
-    const { error } = await sb.from("subjects").update(patch).eq("id", id);
-    if (error) { toast("تعذّر الحفظ: " + error.message); return false; }
-    toast("تم الحفظ ✓"); return true;
-  };
-  const draw = () => {
-    box.textContent = "";
-    box.appendChild(el("h2", { textContent: "المواد" }));
-    const nn = el("input", { placeholder: "اسم مادة جديدة" });
-    const ns = leadSel("");
-    box.appendChild(el("div", { className: "arow" }, [nn, ns, B("primary", "plus", "إضافة مادة", async () => {
-      const v = nn.value.trim();
-      if (!v) { toast("اكتب اسم المادة أولاً"); return; }
-      const { error } = await sb.from("subjects").insert({ name: v, lead_id: ns.value || null });
-      if (error) { toast("تعذّرت الإضافة: " + error.message); return; }
-      toast("انضافت المادة ✓"); await loadSubjects(); draw();
-    })]));
-    subjects.forEach(s => {
-      const nm = el("input", { value: s.name });
-      nm.onchange = async () => { const v = nm.value.trim(); if (!v) { nm.value = s.name; return; } if (await upd(s.id, { name: v })) s.name = v; };
-      const sel = leadSel(s.lead_id);
-      sel.onchange = async () => { if (await upd(s.id, { lead_id: sel.value || null })) s.lead_id = sel.value || null; };
-      box.appendChild(el("div", { className: "arow" }, [nm, sel, B("danger", "trash", "حذف المادة وكل ملفاتها", async () => {
-        if (!confirm("حذف «" + s.name + "» وكل ملفاتها نهائياً؟")) return;
-        const { error } = await sb.from("subjects").delete().eq("id", s.id);
-        if (error) { toast("تعذّر الحذف: " + error.message); return; }
-        toast("انحذفت المادة"); await loadSubjects(); draw();
-      })]));
-    });
-    const accBox = el("div");
-    box.appendChild(el("div", { className: "section-h" }, [el("h2", { textContent: "الحسابات" })]));
-    box.appendChild(accBox);
-    renderAccounts(accBox);
-  };
-  await loadSubjects();
-  draw();
-}
-
-async function renderAccounts(box) {
-  box.textContent = "";
-  const r = await fnCall({ action: "list_users" });
-  if (!r.ok) { box.appendChild(el("p", { className: "msg", textContent: "تعذّر التحميل: " + (r.description || "") })); return; }
-  const nm = el("input", { placeholder: "اسم المسؤول" });
-  const em = el("input", { type: "email", placeholder: "الإيميل (مثال: physics@bluebits.com)", autocomplete: "off" });
-  const pw = el("input", { type: "text", placeholder: "كلمة السر (6 أحرف أو أكتر)", autocomplete: "off" });
-  box.appendChild(el("div", { className: "arow" }, [nm, em, pw, B("primary", "plus", "إنشاء حساب", async e => {
-    const b = e.currentTarget; b.disabled = true;
-    const x = await fnCall({ action: "create_user", name: nm.value.trim(), email: em.value.trim(), password: pw.value });
-    b.disabled = false;
-    if (x.ok) { toast("انشأ الحساب ✓ اربطه بمادة من فوق"); renderAccounts(box); }
-    else toast("ما انشأ: " + (x.description || ""));
-  })]));
-  r.users.forEach(u => {
-    const np = el("input", { type: "text", placeholder: "كلمة سر جديدة", autocomplete: "off" });
-    box.appendChild(el("div", { className: "arow" }, [
-      el("strong", { textContent: (u.name || "بدون اسم") + " · " + u.email + (u.role === "admin" ? " (أدمن)" : "") }),
-      el("div", { className: "arow-2" }, [np, B("ghost", "", "تغيير كلمة السر", async () => {
-        if (np.value.length < 6) { toast("6 أحرف على الأقل"); return; }
-        const x = await fnCall({ action: "set_password", user_id: u.id, password: np.value });
-        if (x.ok) { toast("تغيّرت كلمة السر ✓"); np.value = ""; }
-        else toast("ما تغيّرت: " + (x.description || ""));
-      })]),
-      B("danger", "trash", "حذف الحساب", async () => {
-        if (!confirm("نحذف حساب " + u.email + "؟ المادة اللي إلو بتصير بدون مسؤول.")) return;
-        const x = await fnCall({ action: "delete_user", user_id: u.id });
-        if (x.ok) { toast("انحذف الحساب ✓"); renderAccounts(box); }
-        else toast("ما انحذف: " + (x.description || ""));
-      })
-    ]));
-  });
-}
-
-async function showArchive() {
-  closeSheets();
-  const { data, error } = await sb.from("reports").select("id,created_at,source,body").order("created_at", { ascending: false }).limit(40);
-  if (error) { toast("تعذّر تحميل الأرشيف: " + error.message); return; }
-  const nodes = (data || []).map(r => {
-    const when = new Date(r.created_at).toLocaleString("ar-SY", { dateStyle: "medium", timeStyle: "short" });
-    const who = r.source === "auto" ? "تلقائي (جمعة 8 مساءً)" : "يدوي";
-    return el("details", { className: "arow" }, [el("summary", { textContent: when + " · " + who }), el("pre", { className: "pre", textContent: r.body })]);
-  });
-  if (!nodes.length) nodes.push(emptyState("box", "ما في تقارير محفوظة لسا", "رح تنضاف هون كل تقرير بينرسل."));
-  openSheet("الأرشيف", nodes);
-}
-
-async function showChanges() {
-  closeSheets();
-  const { data, error } = await sb.from("changes").select("created_at,actor_name,action,item_name,detail").order("created_at", { ascending: false }).limit(100);
-  if (error) { toast("تعذّر تحميل السجل: " + error.message); return; }
-  const tr = d => (d || "").split(" ").filter(Boolean).map(x => x.startsWith("stage:") ? "صار: " + (STAGES[+x.slice(6)] || "") : (CH_LBL[x] || x)).join(" · ");
-  const nodes = (data || []).map(c => {
-    const when = new Date(c.created_at).toLocaleString("ar-SY", { dateStyle: "short", timeStyle: "short" });
-    return el("div", { className: "arow" }, [el("div", { className: "cap", textContent: when + " · " + (c.actor_name || "نظام") }), el("div", { textContent: (c.item_name || "") + (c.detail ? " · " + tr(c.detail) : "") })]);
-  });
-  if (!nodes.length) nodes.push(emptyState("hist", "ما في تغييرات مسجّلة لسا", "أي تعديل عالملفات أو المواد بينسجّل هون."));
-  openSheet("السجل", nodes);
-}
-
-async function backup() {
-  const { data: pr } = await sb.from("profiles").select("id,name");
-  const who = {}; (pr || []).forEach(p => who[p.id] = p.name);
-  const KL = { lecture: "نظري", practical: "عملي", bank: "بنك" };
-  const rows = [["المادة", "المسؤول", "النوع", "الملف", "المرحلة", "من تاريخ", "السبب/ملاحظة"]];
-  subjects.forEach(s => s.items.slice().sort((a, b) => a.id - b.id).forEach(i => rows.push([s.name, who[s.lead_id] || "", KL[i.kind] || i.kind, i.name, STAGES[i.stage] || "مرفوعة", new Date(i.since).toISOString().slice(0, 10), i.note || ""])));
-  const q = v => '"' + String(v).replace(/"/g, '""') + '"';
-  const csv = "\ufeff" + rows.map(r => r.map(q).join(",")).join("\r\n");
-  const n = new Date();
-  const a = el("a", { href: URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })), download: "bluebits-backup-" + n.getFullYear() + "-" + p2(n.getMonth() + 1) + "-" + p2(n.getDate()) + ".csv" });
-  document.body.appendChild(a); a.click(); a.remove();
-  toast("تم تنزيل النسخة ✓");
-}
-
-try { fxStart(document.documentElement.getAttribute("data-theme")); } catch (e) {}
-init();
+      const b = el("button", { className: "step" + (on ? " on" : "") + (!redo && i ===
