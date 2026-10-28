@@ -11,8 +11,9 @@
  "orientation": "portrait",
  "background_color": "#08102a",
  "theme_color": "#08102a",
- "icons": [
-  {
+"icons": [
+  { "src": "Logo-notext.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+]  {
    "src": "icon-192.png",
    "sizes": "192x192",
    "type": "image/png",
