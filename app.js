@@ -25,6 +25,9 @@ const CH_LBL = { add_item: "أضيف ملف", del_item: "انحذف ملف", add
 const ICONS = {
   plus: '<path d="M12 5v14M5 12h14"/>',
   x: '<path d="M18 6 6 18M6 6l12 12"/>',
+ICONS.lecture = '<path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="M6 6h10"/>';
+ICONS.flask = '<path d="M9 3h6M10 3v6L4.5 19a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 9V3M7.5 15h9"/>';
+ICONS.bank = '<path d="M4 3h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M12 8v8M8 12h8"/>';
   alert: '<path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
   send: '<path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/>',
   doc: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
@@ -541,7 +544,11 @@ function showDetail(s, fwd) {
   const sections = [];
   KINDS.forEach(([kind, title, , ph]) => {
     const its = s.items.filter(i => i.kind === kind).sort((a, b) => a.id - b.id);
-    sections.push(el("div", { className: "section-h" }, [el("h2", { textContent: title }), el("span", { className: "cap", textContent: its.length + " ملف" })]));
+const kindIcons = { lecture: "lecture", practical: "flask", bank: "bank" };
+sections.push(el("div", { className: "section-h" }, [
+  el("h2", { innerHTML: ic(kindIcons[kind] || "doc", 20) + " <span style='vertical-align:middle; margin-right:6px;'>" + title + "</span>" }),
+  el("span", { className: "cap", textContent: its.length + " ملف" })
+]));
     if (!its.length) sections.push(emptyState(kind === "practical" ? "box" : "doc", kind === "practical" ? "ما في عملي لهالمادة" : "ما في ملفات لسا", edit ? "أضف أول ملف من تحت." : "بينضاف لما يبلّش مسؤول المادة."));
     its.forEach(it => sections.push(itemCard(it, edit)));
     if (edit) {
