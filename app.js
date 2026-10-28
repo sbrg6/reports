@@ -1,6 +1,6 @@
 const SB_URL = "https://ejjhojeajjjbaczkcfwc.supabase.co";
 const SB_KEY = "sb_publishable__IyRTTMoM-xHtvGDU1wvnw_-5rryX9t";
-const LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9a64b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20'/%3E%3Cpath d='M6 6h10'/%3E%3C/svg%3E";
+const LOGO = "photo_1_2026-10-28_03-36-10.jpg";
 const STAGES = ["عند العضو العلمي", "عند العضو التقني", "عند المسؤول التقني", "تدقيق مسؤول المادة", "مرفوعة"];
 const STEP_LABELS = ["العلمي", "التقني", "المسؤول التقني", "التدقيق", "مرفوعة"];
 const WHERE = ["متوقف عند العضو العلمي", "متوقف عند العضو التقني", "في مرحلة التدقيق التقني", "في مرحلة التدقيق العلمي", "", "رجع للتعديل"];
