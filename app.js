@@ -1,6 +1,6 @@
 const SB_URL = "https://ejjhojeajjjbaczkcfwc.supabase.co";
 const SB_KEY = "sb_publishable__IyRTTMoM-xHtvGDU1wvnw_-5rryX9t";
-const LOGO = "Logo notext.png";
+const LOGO = "logo-notext.png";
 const LOGO_FULL = "Horizontal logo 2.png";
 const STAGES = ["عند العضو العلمي", "عند العضو التقني", "عند المسؤول التقني", "تدقيق مسؤول المادة", "مرفوعة"];
 const STEP_LABELS = ["العلمي", "التقني", "المسؤول التقني", "التدقيق", "مرفوعة"];
