@@ -220,3 +220,12 @@ input:focus, select:focus { border-color: var(--accent); }
 .score-row b { min-width: 34px; text-align: left; font-variant-numeric: tabular-nums; }
 .score-preview { font-size: .88rem; color: var(--muted); }
 .score-preview b { color: var(--accent); }
+.section-h h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+.section-h h2 svg {
+  color: var(--accent);
+}
