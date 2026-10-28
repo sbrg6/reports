@@ -178,6 +178,15 @@ input,select{width:100%;font:inherit;color:var(--text);background:var(--surface2
 .grid.compact{grid-template-columns:1fr;gap:8px}
 .grid.compact .subj{padding:10px 14px;margin:0;border-inline-start:4px solid var(--tint)}
 .grid.compact .pips,.grid.compact .orn{display:none}
+.pts{display:inline-flex;align-items:center;gap:4px;font-size:.78rem;font-weight:700;color:var(--accent);border:1px solid var(--border);border-radius:999px;padding:1px 10px}
+.pts.unscored{color:var(--muted);font-weight:500}
+.score-box{display:grid;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border)}
+.score-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;font-size:.86rem}
+.score-row span{color:var(--muted)}
+.score-row input[type=range]{width:100%;accent-color:var(--accent)}
+.score-row b{min-width:34px;text-align:left;font-variant-numeric:tabular-nums}
+.score-preview{font-size:.88rem;color:var(--muted)}
+.score-preview b{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -632,9 +641,44 @@ function itemCard(it,edit){
       note.onchange=()=>save(it,{note:note.value.trim()});
       card.appendChild(note);
     }else if(it.note)card.appendChild(el("div",{className:"cap",textContent:it.note}));
+    if(isAdmin())card.appendChild(scoreBox(it,render));
   };
   render();
   return card;
+}
+
+function scoreBox(it,onSaved){
+  const vals={weight:it.weight||1,quality:it.quality,timeliness:it.timeliness,accuracy:it.accuracy};
+  const box=el("div",{className:"score-box"});
+  const prev=el("div",{className:"score-preview"});
+  const fields=[["weight","الوزن",0.5,5,0.5],["quality","الجودة",0,100,5],["timeliness","الالتزام",0,100,5],["accuracy","الدقة",0,100,5]];
+  const inputs={};
+  fields.forEach(([key,label,min,max,step])=>{
+    const cur=vals[key]==null?(key==="weight"?1:50):vals[key];
+    const num=el("b",{textContent:String(cur)});
+    const rng=el("input",{type:"range",min,max,step,value:cur});
+    rng.oninput=()=>{num.textContent=rng.value;calc()};
+    inputs[key]=rng;
+    box.appendChild(el("div",{className:"score-row"},[el("span",{textContent:label}),rng,num]));
+  });
+  function calc(){
+    const w=+inputs.weight.value,q=+inputs.quality.value,t2=+inputs.timeliness.value,a=+inputs.accuracy.value;
+    const pts=Math.round(w*10*(q*0.4+t2*0.3+a*0.3)/100*100)/100;
+    prev.innerHTML="النقاط المتوقعة: <b>"+pts+"</b>";
+  }
+  calc();
+  box.appendChild(prev);
+  const msg=el("div",{className:"cap"});
+  box.appendChild(el("div",{className:"btns"},[
+    B("primary","","حفظ التقييم",async(e)=>{
+      const b=e.currentTarget;b.disabled=true;
+      const ok=await save(it,{weight:+inputs.weight.value,quality:+inputs.quality.value,timeliness:+inputs.timeliness.value,accuracy:+inputs.accuracy.value});
+      b.disabled=false;
+      if(ok){msg.textContent="";onSaved()}else msg.textContent="تعذّر الحفظ";
+    })
+  ]));
+  box.appendChild(msg);
+  return box;
 }
 
 function showDetail(s,fwd){
