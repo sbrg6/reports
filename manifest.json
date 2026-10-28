@@ -12,7 +12,7 @@
  "background_color": "#08102a",
  "theme_color": "#08102a",
 "icons": [
-  { "src": "Logo-notext.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  { "src": "logo-notext.png", "sizes": "5555x5555", "type": "image/png", "purpose": "any" }
 ]  {
    "src": "icon-192.png",
    "sizes": "192x192",
