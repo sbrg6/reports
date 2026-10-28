@@ -1,6 +1,7 @@
 const SB_URL = "https://ejjhojeajjjbaczkcfwc.supabase.co";
 const SB_KEY = "sb_publishable__IyRTTMoM-xHtvGDU1wvnw_-5rryX9t";
-const LOGO = "photo_1_2026-10-28_03-36-10.jpg";
+const LOGO = "Logo notext.png";
+const LOGO_FULL = "Horizontal logo 2.png";
 const STAGES = ["عند العضو العلمي", "عند العضو التقني", "عند المسؤول التقني", "تدقيق مسؤول المادة", "مرفوعة"];
 const STEP_LABELS = ["العلمي", "التقني", "المسؤول التقني", "التدقيق", "مرفوعة"];
 const WHERE = ["متوقف عند العضو العلمي", "متوقف عند العضو التقني", "في مرحلة التدقيق التقني", "في مرحلة التدقيق العلمي", "", "رجع للتعديل"];
@@ -199,7 +200,6 @@ async function logout() {
   me = null; prof = null; subjects = []; cur = null;
   showLogin();
 }
-
 function topbar() {
   const who = el("div", { className: "me" }, [
     el("span", { textContent: (prof && prof.name) || (me && me.email) || "" }),
@@ -207,9 +207,11 @@ function topbar() {
     IB("key", "تغيير كلمة السر", showPw),
     IB("out", "خروج", logout)
   ]);
-  return el("div", { className: "top" }, [el("div", { className: "logo" }, [el("img", { src: LOGO, alt: "Blue Bits" })]), who]);
+  return el("div", { className: "top" }, [
+    el("div", { className: "logo" }, [el("img", { src: "Horizontal logo 2.png", alt: "Blue Bits" })]), 
+    who
+  ]);
 }
-
 function mount(node, noTop) {
   hideSplash();
   app.textContent = "";
