@@ -173,8 +173,7 @@ async function init() {
   sb = supabase.createClient(SB_URL, SB_KEY);
   const { data } = await sb.auth.getSession();
   if (data.session) { me = data.session.user; await afterLogin(); } else showLogin();
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
-}
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(console.error);}
 
 async function afterLogin() {
   showSkeleton();
