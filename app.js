@@ -548,7 +548,13 @@ function showDetail(s, fwd) {
       const nm = el("input", { placeholder: "اسم الملف (مثال: " + ph + ")" });
       const add = B("primary", "plus", "إضافة", async () => {
         const v = nm.value.trim();
-        if (!v) { toast("اكتب اسم الملف أولاً"); nm.focus(); return; }
+        if (!v) {
+  toast("اكتب اسم الملف أولاً");
+  nm.classList.add("shake");
+  nm.focus();
+  setTimeout(() => nm.classList.remove("shake"), 400);
+  return;
+}
         const { data, error } = await sb.from("items").insert({ subject_id: s.id, kind, name: v }).select("id,kind,name,stage,note,since").single();
         if (error) { toast("تعذّرت الإضافة: " + error.message); return; }
         s.items.push(data);
