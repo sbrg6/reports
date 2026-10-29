@@ -2,9 +2,9 @@ const SB_URL = "https://ejjhojeajjjbaczkcfwc.supabase.co";
 const SB_KEY = "sb_publishable__IyRTTMoM-xHtvGDU1wvnw_-5rryX9t";
 const LOGO = "logo-notext.png";
 const LOGO_FULL = "Horizontal logo 2.png";
-const STAGES = ["عند العضو العلمي", "عند العضو التقني", "عند المسؤول التقني", "تدقيق مسؤول المادة", "مرفوعة"];
-const STEP_LABELS = ["العلمي", "التقني", "المسؤول التقني", "التدقيق", "مرفوعة"];
-const WHERE = ["متوقف عند العضو العلمي", "متوقف عند العضو التقني", "في مرحلة التدقيق التقني", "في مرحلة التدقيق العلمي", "", "رجع للتعديل"];
+const STAGES = ["تحضير علمي", "كتابة وفحص تقني", "تدقيق علمي ونهائي", "نشر", "منشور"];
+const STEP_LABELS = ["التحضير", "التقني", "التدقيق", "النشر", "منشور"];
+const WHERE = ["متوقف عند العضو العلمي", "متوقف عند العضو التقني", "في مرحلة التدقيق العلمي", "في مرحلة النشر", "", "رجع للتعديل"];
 const PUB = 4, REDO = 5, LATE_DAYS = 4;
 const KINDS = [["lecture", "القسم النظري", "تم رفع", "محاضرة 3"], ["practical", "القسم العملي", "تم رفع", "عملي 1"], ["bank", "البنك", "تم تجهيز", "بنك 2"]];
 const THEMES = [
@@ -154,8 +154,13 @@ function subjectPreview(s) {
   });
   return out;
 }
+function footerText(list) {
+  const its = list.flatMap(s => s.items), up = (a, b) => its.filter(i => i.stage === PUB && daysSince(i.since) >= a && daysSince(i.since) < b).length;
+  const w = up(0, 7), l = up(7, 14);
+  return w > l ? "[ إنجاز هذا الأسبوع متقدّم عن الأسبوع الماضي🔥]" : w === l ? "[ إنجاز هذا الأسبوع مثل الأسبوع الماضي]" : "[ إنجاز هذا الأسبوع متراجع عن الأسبوع الماضي🥀]";
+}
 function previewText(list) {
-  return hashtags() + "\n\n" + list.map(subjectPreview).join("\n\n") + "\n\n[ إنجاز هذا الأسبوع متراجع عن الأسبوع الماضي🥀]";
+  return hashtags() + "\n\n" + list.map(subjectPreview).join("\n\n") + "\n\n" + footerText(list);
 }
 
 async function fnCall(body) {
