@@ -111,7 +111,7 @@ function extendBox(it, onSaved) {
   ]);
 }
 const isAdmin = () => prof && prof.role === "admin";
-
+const isTech = () => prof && prof.role === "tech";
 async function loadProfiles() {
   const { data } = await sb.from("profiles").select("id,name");
   profiles = {}; (data || []).forEach(p => profiles[p.id] = p.name || "");
@@ -526,11 +526,39 @@ function itemCard(it, edit) {
       card.appendChild(note);
     } else if (it.note) card.appendChild(el("div", { className: "cap", textContent: it.note }));
     if (isAdmin()) { card.appendChild(extendBox(it, render)); card.appendChild(scoreBox(it, render)); }
+        if (isTech() && it.wf_stage === 2) card.appendChild(techBox(it, render));
   };
   render();
   return card;
 }
-
+function techBox(it, onSaved) {
+  const msg = el("div", { className: "cap" });
+  const sel = el("select", {}, [
+    el("option", { value: "", textContent: "نتيجة الفحص" }),
+    el("option", { value: "minor", textContent: "طفيف" }),
+    el("option", { value: "major", textContent: "جذري" }),
+  ]);
+  sel.value = it.tech_review || "";
+  const moveBtn = B("ghost", "", "نقل للتدقيق", async e => {
+    const b = e.currentTarget; b.disabled = true;
+    const ok = await save(it, { stage: 2 });
+    b.disabled = false;
+    if (ok) onSaved(); else msg.textContent = "تعذّر النقل";
+  });
+  moveBtn.disabled = !it.tech_review;
+  return el("div", { className: "score-box" }, [
+    el("div", { className: "score-row" }, [el("span", { textContent: "الفحص التقني" }), sel]),
+    B("primary", "", "حفظ النتيجة", async e => {
+      if (!sel.value) { msg.textContent = "اختر النتيجة أولاً"; return; }
+      const b = e.currentTarget; b.disabled = true;
+      const ok = await save(it, { tech_review: sel.value, tech_review_at: new Date().toISOString() });
+      b.disabled = false;
+      if (ok) onSaved(); else msg.textContent = "تعذّر الحفظ";
+    }),
+    moveBtn,
+    msg
+  ]);
+}
 function scoreBox(it, onSaved) {
   const vals = { weight: it.weight || 1, quality: it.quality, timeliness: it.timeliness, accuracy: it.accuracy };
   const box = el("div", { className: "score-box" });
