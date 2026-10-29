@@ -898,5 +898,35 @@ function excusedBox(it, onSaved) {
   };
   return el("label", { className: "cap" }, [cb, el("span", { textContent: " ظرف معروف (ما يُحسب بالمؤشرات)" })]);
 }
+async function showUploads() {
+  const { data } = await sb.from("tg_upload_matches")
+    .select("upload_id,item_id,file_name,subject,kind,item_name,wf_stage,sent_at")
+    .eq("handled", false)
+    .in("wf_stage", [1, 2, 3])
+    .order("sent_at", { ascending: false });
 
-    acts.push(B("ghost", "doc", "ملفات بانتظار التأكيد", showUploads));
+  const rows = (data ?? []).map(r => {
+    const msg = el("div", { className: "cap" });
+    const row = el("div", { className: "score-box" }, [
+      el("div", { className: "cap", textContent: r.subject + " · " + r.item_name + " (" + r.kind + ")" }),
+      el("div", { className: "cap", textContent: "الملف: " + r.file_name }),
+      el("div", { className: "cap", textContent: "المرحلة الحالية: " + STAGES[r.wf_stage - 1] + " ← اقتراح النقل للمرحلة التالية" }),
+      B("primary", "", "تأكيد النقل", async e => {
+        const b = e.currentTarget; b.disabled = true;
+        const ok = await save({ id: r.item_id }, { stage: r.wf_stage });
+        if (ok) {
+          await sb.from("tg_uploads").update({ handled: true }).eq("id", r.upload_id);
+          row.remove();
+        } else {
+          b.disabled = false;
+          msg.textContent = "تعذّر النقل";
+        }
+      }),
+      msg
+    ]);
+    return row;
+  });
+
+  openSheet("ملفات مرفوعة بانتظار التأكيد",
+    rows.length ? rows : [el("div", { className: "cap", textContent: "ما فيه شي بانتظار التأكيد" })]);
+}
