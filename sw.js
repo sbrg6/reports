@@ -1,4 +1,4 @@
-const V = "bb-v29";
+const V = "bb-v30";
 const SHELL = [
   "./",
   "index.html",
@@ -26,8 +26,8 @@ self.addEventListener("fetch", e => {
   if (u.hostname.endsWith("supabase.co")) return;
   if (u.origin !== location.origin && !EXT.test(u.hostname)) return;
   e.respondWith(
-    fetch(r).then(x => {
-      if (x.status === 200 || x.type === "opaque") {
+        fetch(r, { cache: "no-cache" }).then(x => {      
+          if (x.status === 200 || x.type === "opaque") {
         const c = x.clone();
         caches.open(V).then(h => h.put(r, c));
       }
