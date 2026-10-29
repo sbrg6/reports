@@ -627,7 +627,7 @@ function scoreBox(it, onSaved) {
 function showDetail(s, fwd) {
   cur = s;
   closeSheets();
-  const edit = s.lead_id === me.id;
+  const edit = s.lead_id === me.id || isAdmin();
   const head = [
     B("ghost", "", "→ كل المواد", async () => { await loadSubjects(); showList(true); }),
     el("h1", { textContent: s.name }),
