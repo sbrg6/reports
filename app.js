@@ -80,7 +80,7 @@ const LATE_SEVERE = 7;
 const p2 = n => String(n).padStart(2, "0");
 const fmt = d => { const x = new Date(d); return p2(x.getDate()) + "/" + p2(x.getMonth() + 1); };
 const daysSince = d => Math.floor((Date.now() - new Date(d).getTime()) / 864e5);
-const ITEM_COLS = "id,kind,name,stage,note,since,wf_stage,redo,due_at,warn_at,extended_hours,section,session_date,postponed";
+const ITEM_COLS = "id,kind,name,stage,note,since,wf_stage,redo,due_at,warn_at,extended_hours,section,session_date,postponed,excused";
 const hrs = ms => ms / 36e5;
 const fmtH = h => { h = Math.abs(h); if (h < 1) return Math.max(1, Math.round(h * 60)) + " د"; if (h < 24) return Math.round(h) + " س"; const r = Math.round(h % 24); return Math.floor(h / 24) + " يوم" + (r ? " و" + r + " س" : ""); };
 const todayStr = () => { const d = new Date(); return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()); };
@@ -416,6 +416,7 @@ function showList(back) {
   if (subjects.length) acts.push(B("ghost", "doc", "تقرير الأسبوع", () => showReport(subjects)));
   if (isAdmin()) {
     acts.push(B("ghost", "gear", "إدارة المواد", showAdmin));
+    acts.push(B("ghost", "hist", "مؤشرات الفرق", showHealth));
     acts.push(B("ghost", "box", "الأرشيف", showArchive));
     acts.push(B("ghost", "hist", "السجل", showChanges));
     acts.push(B("ghost", "down", "نسخة CSV", backup));
@@ -526,6 +527,7 @@ function itemCard(it, edit) {
       card.appendChild(note);
     } else if (it.note) card.appendChild(el("div", { className: "cap", textContent: it.note }));
     if (isAdmin()) { card.appendChild(extendBox(it, render)); card.appendChild(scoreBox(it, render)); }
+        if (isAdmin()) card.appendChild(excusedBox(it, render));
         if (isTech() && it.wf_stage === 2) card.appendChild(techBox(it, render));
     function holderBox(it, onSaved) {
   const msg = el("div", { className: "cap" });
@@ -833,3 +835,65 @@ async function backup() {
 
 try { fxStart(document.documentElement.getAttribute("data-theme")); } catch (e) {}
 init();
+// ============================================================
+// المرحلة 3: مؤشرات الفرق + ظرف معروف
+// الصق هذا الكود في آخر ملف app.js (على مستوى الملف، مش داخل دالة)
+// ============================================================
+
+// الوسيط: القيمة اللي في النص (مو المتوسط)
+const medianOf = a => {
+  if (!a || !a.length) return null;
+  const s = [...a].sort((x, y) => x - y);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+};
+
+// شاشة مؤشرات الفرق (للأدمن فقط)
+async function showHealth() {
+  const [{ data: evs }, { data: its }] = await Promise.all([
+    sb.from("stage_events").select("item_id,kind,to_stage,happened_at,id").order("happened_at").order("id"),
+    sb.from("items").select("id,excused"),
+  ]);
+  const excused = new Set((its ?? []).filter(i => i.excused).map(i => i.id));
+  const CHAIN = ["created", "advance", "back", "return"];
+
+  // نجمع أحداث كل ملف بالترتيب
+  const byItem = {};
+  (evs ?? []).forEach(e => { (byItem[e.item_id] = byItem[e.item_id] || []).push(e); });
+
+  // مدة كل مرحلة = الفرق بين دخول المرحلة والحدث اللي بعدها
+  const durs = {};
+  for (const id of Object.keys(byItem)) {
+    if (excused.has(+id)) continue;
+    const list = byItem[id].filter(e => CHAIN.includes(e.kind) && e.to_stage != null);
+    for (let k = 0; k + 1 < list.length; k++) {
+      const h = (new Date(list[k + 1].happened_at) - new Date(list[k].happened_at)) / 36e5;
+      if (h >= 0) (durs[list[k].to_stage] = durs[list[k].to_stage] || []).push(h);
+    }
+  }
+
+  const rows = [];
+  for (let w = 1; w <= 4; w++) {
+    const a = durs[w] || [];
+    const m = medianOf(a);
+    rows.push(el("div", {
+      className: "cap",
+      textContent: STAGES[w - 1] + ": " + (m == null ? "ما فيه بيانات بعد" : m.toFixed(1) + " ساعة") + " (عينات: " + a.length + ")"
+    }));
+  }
+  rows.push(el("div", {
+    className: "cap",
+    textContent: "الوسيط بالساعات، بدون الملفات المعذورة. العيّنات الصغيرة ما تعطي حكم على أحد."
+  }));
+  openSheet("مؤشرات الفرق", rows);
+}
+
+// خانة "ظرف معروف" على كل ملف (للأدمن فقط)
+function excusedBox(it, onSaved) {
+  const cb = el("input", { type: "checkbox", checked: !!it.excused });
+  cb.onchange = async () => {
+    const ok = await save(it, { excused: cb.checked });
+    if (ok) onSaved(); else cb.checked = !cb.checked;
+  };
+  return el("label", { className: "cap" }, [cb, el("span", { textContent: " ظرف معروف (ما يُحسب بالمؤشرات)" })]);
+}
