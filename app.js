@@ -80,8 +80,36 @@ const LATE_SEVERE = 7;
 const p2 = n => String(n).padStart(2, "0");
 const fmt = d => { const x = new Date(d); return p2(x.getDate()) + "/" + p2(x.getMonth() + 1); };
 const daysSince = d => Math.floor((Date.now() - new Date(d).getTime()) / 864e5);
-const isLate = i => i.stage !== PUB && daysSince(i.since) >= LATE_DAYS;
-const sevOf = i => { if (i.stage === PUB) return 0; const d = daysSince(i.since); return d >= LATE_SEVERE ? 2 : d >= LATE_DAYS ? 1 : 0; };
+const ITEM_COLS = "id,kind,name,stage,note,since,wf_stage,redo,due_at,warn_at,extended_hours,section,session_date,postponed";
+const hrs = ms => ms / 36e5;
+const fmtH = h => { h = Math.abs(h); if (h < 1) return Math.max(1, Math.round(h * 60)) + " د"; if (h < 24) return Math.round(h) + " س"; const r = Math.round(h % 24); return Math.floor(h / 24) + " يوم" + (r ? " و" + r + " س" : ""); };
+const todayStr = () => { const d = new Date(); return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()); };
+const isLate = i => i.stage !== PUB && !i.postponed && (i.due_at ? Date.now() >= new Date(i.due_at) : daysSince(i.since) >= LATE_DAYS);
+const sevOf = i => {
+  if (i.stage === PUB || i.postponed) return 0;
+  if (i.due_at) { const o = hrs(Date.now() - new Date(i.due_at)); return o >= 24 ? 2 : o >= 0 ? 1 : 0; }
+  const d = daysSince(i.since); return d >= LATE_SEVERE ? 2 : d >= LATE_DAYS ? 1 : 0;
+};
+const dueText = i => {
+  if (i.stage === PUB) return "";
+  if (i.postponed) return "الجلسة مؤجلة";
+  if (!i.due_at) return "من " + fmt(i.since) + (isLate(i) ? " · متأخر " + daysSince(i.since) + " يوم" : "");
+  const left = hrs(new Date(i.due_at) - Date.now());
+  return (left >= 0 ? "المتبقي " : "متأخر ") + fmtH(left) + (i.extended_hours > 0 ? " · ممدّد +" + i.extended_hours + " س" : "");
+};
+function extendBox(it, onSaved) {
+  const inp = el("input", { type: "number", min: "0", step: "1", value: it.extended_hours || 0 });
+  const msg = el("div", { className: "cap" });
+  return el("div", { className: "score-box" }, [
+    el("div", { className: "score-row" }, [el("span", { textContent: "تمديد (ساعات)" }), inp]),
+    B("ghost", "", "حفظ التمديد", async e => {
+      const b = e.currentTarget; b.disabled = true;
+      const ok = await save(it, { extended_hours: Math.max(0, +inp.value || 0) });
+      b.disabled = false;
+      if (ok) onSaved(); else msg.textContent = "تعذّر الحفظ";
+    }), msg
+  ]);
+}
 const isAdmin = () => prof && prof.role === "admin";
 
 async function loadProfiles() {
@@ -187,7 +215,7 @@ async function afterLogin() {
 }
 
 async function loadSubjects() {
-  const { data, error } = await sb.from("subjects").select("id,name,lead_id,items(id,kind,name,stage,note,since)").order("name");
+  const { data, error } = await sb.from("subjects").select("id,name,lead_id,items(" + ITEM_COLS + ")").order("name");
   if (error) { toast("تعذّر تحميل المواد: " + error.message); subjects = []; return; }
   subjects = data || [];
   if (cur) cur = subjects.find(s => s.id === cur.id) || null;
@@ -308,7 +336,8 @@ function decor(name) {
 }
 
 const isSoon = i => {
-  if (i.stage === PUB) return false;
+  if (i.stage === PUB || i.postponed) return false;
+  if (i.due_at && i.warn_at) return Date.now() >= new Date(i.warn_at) && Date.now() < new Date(i.due_at);
   const d = daysSince(i.since);
   return d >= LATE_DAYS - 1 && d < LATE_DAYS;
 };
@@ -411,15 +440,15 @@ function showList(back) {
 
 function showLate(list, title) {
   closeSheets();
-  list.sort((a, b) => new Date(a.i.since) - new Date(b.i.since));
+  list.sort((a, b) => new Date(a.i.due_at || a.i.since) - new Date(b.i.due_at || b.i.since));
   const rows = list.map(({ s, i }) => {
     const sev = sevOf(i) === 2;
     return el("button", { className: "lrow", onclick: () => { closeSheets(); showDetail(s); } }, [
       el("strong", { textContent: s.name + " · " + i.name }),
-      el("div", { className: "cap" + (sev ? " sev" : ""), textContent: "واقفة " + STAGES[i.stage] + " من " + daysSince(i.since) + " يوم" })
+      el("div", { className: "cap" + (sev ? " sev" : ""), textContent: STAGES[i.stage] + " · " + dueText(i) })
     ]);
   });
-  openSheet(title || "ملفات متأخرة (" + LATE_DAYS + " أيام أو أكتر)", rows);
+  openSheet(title || "ملفات متأخرة", rows);
 }
 
 function showReport(list) {
@@ -439,9 +468,9 @@ async function save(it, patch) {
   const now = new Date().toISOString();
   const body = { ...patch, updated_at: now };
   if ("stage" in patch) body.since = now;
-  const { error } = await sb.from("items").update(body).eq("id", it.id);
+  const { data: upd, error } = await sb.from("items").update(body).eq("id", it.id).select("due_at,warn_at,clock_start,wf_stage,redo,extended_hours,postponed").maybeSingle();
   if (error) { toast("تعذّر الحفظ: " + error.message); return false; }
-  Object.assign(it, patch);
+  Object.assign(it, patch, upd || {});
   if (body.since) it.since = now;
   toast("تم الحفظ ✓");
   return true;
@@ -483,7 +512,7 @@ function itemCard(it, edit) {
     const sev = late && sevOf(it) === 2;
     card.append(head, stepper,
       el("div", { className: "stage" + (redo ? " redo" : ""), textContent: redo ? "رجعت للتعديل" : STAGES[it.stage] }),
-      el("div", { className: "cap" + (sev ? " sev" : soon ? " soon" : ""), textContent: it.stage === PUB ? "" : "من " + fmt(it.since) + (late ? " · متأخر " + daysSince(it.since) + " يوم" : soon ? " · اقترب الموعد ⏳" : "") })
+      el("div", { className: "cap" + (sev ? " sev" : soon ? " soon" : ""), textContent: dueText(it) + (soon ? " ⏳" : "") })
     );
     if (edit) {
       if (!redo) card.appendChild(el("button", { className: "redo-btn", textContent: "↩ رجّعه للتعديل", onclick: async () => { if (await save(it, { stage: REDO })) render(); } }));
@@ -491,7 +520,7 @@ function itemCard(it, edit) {
       note.onchange = () => save(it, { note: note.value.trim() });
       card.appendChild(note);
     } else if (it.note) card.appendChild(el("div", { className: "cap", textContent: it.note }));
-    if (isAdmin()) card.appendChild(scoreBox(it, render));
+    if (isAdmin()) { card.appendChild(extendBox(it, render)); card.appendChild(scoreBox(it, render)); }
   };
   render();
   return card;
@@ -553,6 +582,9 @@ sections.push(el("div", { className: "section-h" }, [
     its.forEach(it => sections.push(itemCard(it, edit)));
     if (edit) {
       const nm = el("input", { placeholder: "اسم الملف (مثال: " + ph + ")" });
+      const secSel = el("select", {}, [["", "الشعبة"], ["A", "شعبة 1 (A)"], ["B", "شعبة 2 (B)"]].map(([v, l]) => el("option", { value: v, textContent: l })));
+      secSel.value = lsGet("bb_sec", "");
+      const dateIn = el("input", { type: "date", value: todayStr() });
       const add = B("primary", "plus", "إضافة", async () => {
         const v = nm.value.trim();
         if (!v) {
@@ -562,12 +594,13 @@ sections.push(el("div", { className: "section-h" }, [
   setTimeout(() => nm.classList.remove("shake"), 400);
   return;
 }
-        const { data, error } = await sb.from("items").insert({ subject_id: s.id, kind, name: v }).select("id,kind,name,stage,note,since").single();
+        const { data, error } = await sb.from("items").insert({ subject_id: s.id, kind, name: v, section: secSel.value || null, session_date: kind === "bank" ? null : (dateIn.value || null) }).select(ITEM_COLS).single();
         if (error) { toast("تعذّرت الإضافة: " + error.message); return; }
+        lsSet("bb_sec", secSel.value);
         s.items.push(data);
         showDetail(s);
       });
-      sections.push(el("div", { className: "add" }, [nm, add]));
+      sections.push(el("div", { className: "add" }, kind === "bank" ? [nm, add] : [nm, secSel, dateIn, add]));
     }
   });
   mount(el("div", { className: "view" + (fwd === false ? "" : " dir-fwd") }, head.concat(sections)));
