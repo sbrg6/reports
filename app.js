@@ -416,6 +416,7 @@ function showList(back) {
   if (subjects.length) acts.push(B("ghost", "doc", "تقرير الأسبوع", () => showReport(subjects)));
   if (isAdmin()) {
     acts.push(B("ghost", "gear", "إدارة المواد", showAdmin));
+    acts.push(B("ghost", "doc", "ملفات بانتظار التأكيد", showUploads));
     acts.push(B("ghost", "hist", "مؤشرات الفرق", showHealth));
     acts.push(B("ghost", "box", "الأرشيف", showArchive));
     acts.push(B("ghost", "hist", "السجل", showChanges));
