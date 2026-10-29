@@ -527,6 +527,37 @@ function itemCard(it, edit) {
     } else if (it.note) card.appendChild(el("div", { className: "cap", textContent: it.note }));
     if (isAdmin()) { card.appendChild(extendBox(it, render)); card.appendChild(scoreBox(it, render)); }
         if (isTech() && it.wf_stage === 2) card.appendChild(techBox(it, render));
+    function holderBox(it, onSaved) {
+  const msg = el("div", { className: "cap" });
+  const sel = el("select");
+  sel.appendChild(el("option", { value: "", textContent: "— بدون إسناد —" }));
+  const btn = B("ghost", "", "إعادة الإسناد", async e => {
+    const b = e.currentTarget; b.disabled = true;
+    const ok = await save(it, { holder_id: sel.value ? +sel.value : null });
+    b.disabled = false;
+    if (ok) onSaved(); else msg.textContent = "تعذّر الإسناد";
+  });
+  const box = el("div", { className: "score-box" }, [
+    el("div", { className: "score-row" }, [el("span", { textContent: "الماسك الحالي" }), sel]),
+    btn,
+    msg
+  ]);
+  (async () => {
+    const { data: mem } = await sb.from("members")
+      .select("id,name").eq("active", true).eq("track", "technical").order("name");
+    const { data: hold } = await sb.from("items")
+      .select("holder_id").in("wf_stage", [2, 3, 4]).not("holder_id", "is", null);
+    const load = {};
+    (hold ?? []).forEach(h => { load[h.holder_id] = (load[h.holder_id] || 0) + 1; });
+    (mem ?? []).forEach(m => sel.appendChild(el("option", {
+      value: m.id,
+      textContent: m.name + " (" + (load[m.id] || 0) + " ملف)",
+      selected: m.id === it.holder_id
+    })));
+  })();
+  return box;
+}
+        if (isTech() && it.wf_stage === 2) card.appendChild(holderBox(it, render));
   };
   render();
   return card;
