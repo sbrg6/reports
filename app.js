@@ -897,3 +897,5 @@ function excusedBox(it, onSaved) {
   };
   return el("label", { className: "cap" }, [cb, el("span", { textContent: " ظرف معروف (ما يُحسب بالمؤشرات)" })]);
 }
+
+    acts.push(B("ghost", "doc", "ملفات بانتظار التأكيد", showUploads));
