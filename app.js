@@ -957,29 +957,30 @@ async function showUploads() {
 }
 function topicsBox(it, onSaved) {
   const msg = el("div", { className: "cap" });
-   const ta = el("textarea", {
-    rows: 5,
+  const ta = el("textarea", {
+    rows: 3,
     placeholder: "اكتب كل محور بسطر لحاله",
     value: it.topics || "",
-    style: "width:100%;min-height:90px;max-height:220px;border:1px solid #888;border-radius:8px;padding:8px;font:inherit;box-sizing:border-box;background:transparent;color:inherit;resize:vertical"
+    style: "display:block;width:100%;min-height:70px;max-height:160px;padding:8px 10px;border:1px solid rgba(128,128,128,.45);border-radius:8px;background:rgba(128,128,128,.08);color:inherit;font:inherit;font-size:14px;box-sizing:border-box;resize:vertical"
   });
   const cb = el("input", { type: "checkbox", checked: !!it.cancelled });
   cb.onchange = async () => {
     const ok = await save(it, { cancelled: cb.checked });
     if (ok) onSaved(); else { cb.checked = !cb.checked; msg.textContent = "تعذّر الحفظ"; }
   };
-  const saveBtn = B("primary", "", "حفظ المحاور", async e => {
+  const saveBtn = B("ghost", "", "حفظ المحاور", async e => {
     const b = e.currentTarget; b.disabled = true;
     const ok = await save(it, { topics: ta.value.trim() || null });
     b.disabled = false;
     msg.textContent = ok ? "✓ انحفظت المحاور" : "تعذّر الحفظ";
   });
-  return el("div", { className: "score-box" }, [
-    el("div", { className: "score-row" }, [el("span", { textContent: "محاور المحاضرة" })]),
+  return el("div", { style: "display:flex;flex-direction:column;gap:8px;margin:10px 0" }, [
+    el("div", { className: "cap", textContent: "محاور المحاضرة" }),
     ta,
-    saveBtn,
-    el("div", { className: "score-row" }, [cb, el("span", { textContent: "ملغاة لهذا الأسبوع" })]),
-    msg
+    el("div", { style: "display:flex;align-items:center;gap:8px;flex-wrap:wrap" }, [saveBtn, msg]),
+    el("label", { className: "cap", style: "display:flex;align-items:center;gap:6px;cursor:pointer" }, [
+      cb, el("span", { textContent: "ملغاة لهذا الأسبوع" })
+    ])
   ]);
 }
 async function sendContent(btn) {
