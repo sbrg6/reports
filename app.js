@@ -436,6 +436,7 @@ function showList(back) {
   if (subjects.length) acts.push(B("ghost", "doc", "تقرير الأسبوع", () => showReport(subjects)));
   if (isAdmin()) {
     acts.push(B("ghost", "gear", "إدارة المواد", showAdmin));
+    acts.push(B("ghost", "doc", "تقرير PDF", printReport));
     acts.push(B("ghost", "doc", "تقرير المحتوى", sendContent));
     acts.push(B("ghost", "doc", "ملفات بانتظار التأكيد", showUploads));
     acts.push(B("ghost", "hist", "مؤشرات الفرق", showHealth));
@@ -1015,4 +1016,31 @@ async function showTimeline(it) {
   ]));
   openSheet("خط زمني: " + it.name,
     rows.length ? rows : [el("div", { className: "cap", textContent: "ما في أحداث مسجّلة لهالملف" })]);
+}
+function printReport() {
+  const E = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const kindName = { lecture: "نظري", practical: "عملي", bank: "بنك" };
+  const body = subjects.map(s => {
+    const its = s.items.slice().sort((a, b) => a.id - b.id);
+    if (!its.length) return "<h2>" + E(s.name) + "</h2><p>ما في ملفات</p>";
+    const rows = its.map(i => {
+      const st = i.stage === PUB ? "منشور" : i.stage === REDO ? "رجع للتعديل" : STAGES[i.stage];
+      const flag = i.postponed ? "مؤجل" : isLate(i) ? "متأخر" : isSoon(i) ? "قريب" : "ضمن المهلة";
+      return "<tr><td>" + E(kindName[i.kind] || i.kind) + "</td><td>" + E(i.name) + "</td><td>" + E(st) + "</td><td>" + E(flag) + "</td></tr>";
+    }).join("");
+    return "<h2>" + E(s.name) + "</h2><table><tr><th>النوع</th><th>الملف</th><th>المرحلة</th><th>الحالة</th></tr>" + rows + "</table>";
+  }).join("");
+
+  const html = '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير الملفات</title><style>' +
+    'body{font-family:system-ui,sans-serif;margin:24px;color:#111}' +
+    'h1{font-size:20px}h2{font-size:16px;margin:20px 0 6px;border-bottom:1px solid #ccc;padding-bottom:4px}' +
+    'table{width:100%;border-collapse:collapse;font-size:13px}th,td{border:1px solid #bbb;padding:6px 8px;text-align:right}' +
+    'th{background:#f0f0f0}</style></head><body>' +
+    '<h1>تقرير الملفات - ' + new Date().toLocaleDateString("ar") + '</h1>' + body +
+    '<script>window.onload=function(){window.print()}<\/script></body></html>';
+
+  const w = window.open("", "_blank");
+  if (!w) { toast("اسمح بالنوافذ المنبثقة للموقع"); return; }
+  w.document.write(html);
+  w.document.close();
 }
