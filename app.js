@@ -991,7 +991,7 @@ async function showTimeline(it) {
   const [{ data: evs }, { data: profs }, { data: mems }] = await Promise.all([
     sb.from("stage_events").select("kind,from_stage,to_stage,holder_id,hours,note,happened_at,actor_id")
       .eq("item_id", it.id).order("happened_at").order("id"),
-    sb.from("profiles").select("id,name"),
+    sb.from("profile_names").select("id,name"),
     sb.from("members").select("id,name"),
   ]);
   const who = {}, mem = {};
