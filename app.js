@@ -6,7 +6,7 @@ const STAGES = ["تحضير علمي", "كتابة وفحص تقني", "تدقي
 const STEP_LABELS = ["التحضير", "التقني", "التدقيق", "النشر", "منشور"];
 const WHERE = ["متوقف عند العضو العلمي", "متوقف عند العضو التقني", "في مرحلة التدقيق العلمي", "في مرحلة النشر", "", "رجع للتعديل"];
 const PUB = 4, REDO = 5, LATE_DAYS = 4;
-const KINDS = [["lecture", "القسم النظري", "تم رفع", "محاضرة 3"], ["practical", "القسم العملي", "تم رفع", "عملي 1"], ["bank", "البنك", "تم تجهيز", "بنك 2"]];
+const KINDS = [["lecture", "القسم النظري", "تم رفع", "محاضرة 3"], ["practical", "القسم العملي", "تم رفع", "عملي 1"], ["bank", "البنك", "تم تجهيز", "بنك 2"], ["support", "القسم الداعم", "تم رفع", "داعم 1"], ["summary", "قسم الملخص", "تم رفع", "ملخص 1"]];
 const THEMES = [
   { id: "night", name: "نجوم الليل", sw: ["#0f1b3d", "#c9a64b"] },
   { id: "ink", name: "حبر", sw: ["#0d1424", "#b8c4da"] },
@@ -1024,7 +1024,7 @@ async function showTimeline(it) {
 }
 function printReport() {
   const E = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-  const kindName = { lecture: "نظري", practical: "عملي", bank: "بنك" };
+  const kindName = { lecture: "نظري", practical: "عملي", bank: "بنك", support: "داعم", summary: "ملخص" };
   const all = subjects.flatMap(s => s.items);
   const cnt = {
     total: all.length,
