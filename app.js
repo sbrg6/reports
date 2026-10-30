@@ -550,6 +550,7 @@ function itemCard(it, edit) {
       card.appendChild(note);
     } else if (it.note) card.appendChild(el("div", { className: "cap", textContent: it.note }));
         if (edit && (it.kind === "lecture" || it.kind === "practical")) card.appendChild(topicsBox(it, render));
+        card.appendChild(B("ghost", "hist", "السجل", () => showTimeline(it)));
     if (isAdmin()) { card.appendChild(extendBox(it, render)); card.appendChild(scoreBox(it, render)); }
         if (isAdmin()) card.appendChild(excusedBox(it, render));
         if (isTech() && it.wf_stage === 2) card.appendChild(techBox(it, render));
@@ -984,4 +985,34 @@ async function sendContent(btn) {
     toast(x.ok ? (x.sent ? "انرسل تقرير المحتوى ✓" : "ما فيه محاور جديدة هالأسبوع") : "ما انرسل: " + (x.description || ""));
   } catch (e) { toast("خطأ شبكة، جرّب مرة تانية"); }
   finally { btn.disabled = false; }
+}
+async function showTimeline(it) {
+  const [{ data: evs }, { data: profs }, { data: mems }] = await Promise.all([
+    sb.from("stage_events").select("kind,from_stage,to_stage,holder_id,hours,note,happened_at,actor_id")
+      .eq("item_id", it.id).order("happened_at").order("id"),
+    sb.from("profiles").select("id,name"),
+    sb.from("members").select("id,name"),
+  ]);
+  const who = {}, mem = {};
+  (profs ?? []).forEach(p => who[p.id] = p.name);
+  (mems ?? []).forEach(m => mem[m.id] = m.name);
+  const when = t => new Date(t).toLocaleString("ar", { timeZone: "Asia/Damascus", dateStyle: "short", timeStyle: "short" });
+  const label = e => {
+    switch (e.kind) {
+      case "created":  return "أُضيف الملف";
+      case "advance":  return "انتقل إلى: " + STAGES[e.to_stage - 1];
+      case "back":     return "رجع إلى: " + STAGES[e.to_stage - 1];
+      case "return":   return "رُجّع للتعديل" + (e.note ? " (" + e.note + ")" : "");
+      case "reassign": return "أُسند إلى: " + (mem[e.holder_id] || "بدون إسناد");
+      case "extend":   return "تمديد " + e.hours + " ساعة";
+      case "postpone": return "تأجيل";
+      default:         return e.kind;
+    }
+  };
+  const rows = (evs ?? []).map(e => el("div", { className: "item", style: "padding:10px 12px" }, [
+    el("div", { className: "cap", textContent: when(e.happened_at) + " · " + (who[e.actor_id] || "نظام") }),
+    el("div", { textContent: label(e) })
+  ]));
+  openSheet("خط زمني: " + it.name,
+    rows.length ? rows : [el("div", { className: "cap", textContent: "ما في أحداث مسجّلة لهالملف" })]);
 }
