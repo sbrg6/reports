@@ -236,3 +236,8 @@ html, body { overflow-x: hidden; max-width: 100%; }
   .view { animation: none !important; }
   .login { transform: none !important; }
 }
+.sheet { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sheet > h2 { grid-column: 1 / -1; }
+.sheet > .btn { width: 100%; justify-content: center; margin: 0; }
+.sheet > .btn:last-child { grid-column: 1 / -1; 
+}
