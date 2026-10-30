@@ -229,3 +229,4 @@ input:focus, select:focus { border-color: var(--accent); }
 .section-h h2 svg {
   color: var(--accent);
 }
+html, body { overflow-x: hidden; max-width: 100%; }
