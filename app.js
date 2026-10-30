@@ -674,8 +674,8 @@ sections.push(el("div", { className: "section-h" }, [
     its.forEach(it => sections.push(itemCard(it, edit)));
     if (edit) {
       const nm = el("input", { placeholder: "اسم الملف (مثال: " + ph + ")" });
-      const secSel = el("select", {}, [["", "الشعبة"], ["A", "شعبة 1 (A)"], ["B", "شعبة 2 (B)"]].map(([v, l]) => el("option", { value: v, textContent: l })));
-      secSel.value = lsGet("bb_sec", "");
+    const secSel = el("select", {}, [["A", "شعبة 1 (A)"], ["B", "شعبة 2 (B)"]].map(([v, l]) => el("option", { value: v, textContent: l })));
+      secSel.value = lsGet("bb_sec", "A");
       const dateIn = el("input", { type: "date", value: todayStr() });
       const add = B("primary", "plus", "إضافة", async () => {
         const v = nm.value.trim();
@@ -957,12 +957,11 @@ async function showUploads() {
 }
 function topicsBox(it, onSaved) {
   const msg = el("div", { className: "cap" });
-  const ta = el("textarea", {
-    className: "name-in",
-    rows: 6,
+   const ta = el("textarea", {
+    rows: 5,
     placeholder: "اكتب كل محور بسطر لحاله",
     value: it.topics || "",
-    style: "width:100%;min-height:120px;resize:vertical;font:inherit;padding:10px;box-sizing:border-box"
+    style: "width:100%;min-height:90px;max-height:220px;border:1px solid #888;border-radius:8px;padding:8px;font:inherit;box-sizing:border-box;background:transparent;color:inherit;resize:vertical"
   });
   const cb = el("input", { type: "checkbox", checked: !!it.cancelled });
   cb.onchange = async () => {
