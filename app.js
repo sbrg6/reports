@@ -957,7 +957,13 @@ async function showUploads() {
 }
 function topicsBox(it, onSaved) {
   const msg = el("div", { className: "cap" });
-  const ta = el("textarea", { rows: 6, placeholder: "اكتب كل محور بسطر لحاله", value: it.topics || "" });
+  const ta = el("textarea", {
+    className: "name-in",
+    rows: 6,
+    placeholder: "اكتب كل محور بسطر لحاله",
+    value: it.topics || "",
+    style: "width:100%;min-height:120px;resize:vertical;font:inherit;padding:10px;box-sizing:border-box"
+  });
   const cb = el("input", { type: "checkbox", checked: !!it.cancelled });
   cb.onchange = async () => {
     const ok = await save(it, { cancelled: cb.checked });
@@ -970,14 +976,13 @@ function topicsBox(it, onSaved) {
     msg.textContent = ok ? "✓ انحفظت المحاور" : "تعذّر الحفظ";
   });
   return el("div", { className: "score-box" }, [
-    el("div", { className: "cap", textContent: "محاور المحاضرة" }),
+    el("div", { className: "score-row" }, [el("span", { textContent: "محاور المحاضرة" })]),
     ta,
     saveBtn,
-    el("label", { className: "cap" }, [cb, el("span", { textContent: " ملغاة لهذا الأسبوع" })]),
+    el("div", { className: "score-row" }, [cb, el("span", { textContent: "ملغاة لهذا الأسبوع" })]),
     msg
   ]);
 }
-
 async function sendContent(btn) {
   if (!confirm("نرسل تقرير المحتوى للمجموعة الآن؟")) return;
   btn.disabled = true;
