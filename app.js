@@ -407,7 +407,7 @@ function showList(back) {
     el("p", { className: "sub", textContent: "تابع كل ملف ومرحلته بمكان واحد." }),
     el("div", { className: "stats" }, [stat(all.length, "ملف"), stat(pub, "مرفوع", "ok"), stat(redo, "للتعديل", "warn")]),
     el("div", { className: "progress" }, [
-      el("div", { className: "progress-top" }, [el("span", { textContent: "تقدّم الفصل" }), el("span", { textContent: pct + "%" })]),
+      el("div", { className: "progress-top" }, [el("span", { textContent: isAdmin() ? "تقدّم الفصل" : "تقدّم مادتك" }), el("span", { textContent: pct + "%" })]),
       el("div", { className: "progress-track" }, [el("div", { className: "progress-fill", style: "width:" + pct + "%" })])
     ])
   ];
