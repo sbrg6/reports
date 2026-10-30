@@ -240,7 +240,7 @@ function topbar() {
     IB("out", "خروج", logout)
   ]);
   return el("div", { className: "top" }, [
-    el("div", { className: "logo" }, [el("img", { src: "Horizontal logo 2.png", alt: "Blue Bits" })]), 
+el("div", { className: "logo" }, [el("img", { src: "Horizontal logo 2.png", alt: "Blue Bits" })]),
     who
   ]);
 }
@@ -377,7 +377,6 @@ function subjCard(s) {
     el("div", { className: "ring", style: "color:hsl(" + d.h + " 55% 62%)", innerHTML: progressRing(pct) }),
     el("div", { className: "row" }, [el("h2", { textContent: s.name }), el("div", { className: "row-right" }, right)]),
     its.length ? el("div", { className: "pips" }, its.map(i => el("span", { className: "pip" + (i.stage === PUB ? " on" : i.stage === REDO ? " redo" : isLate(i) ? " late" : isSoon(i) ? " soon" : "") }))) : null,
-    el("div", { className: "cap", textContent: its.length ? (p + " من " + its.length + " مرفوعة") : "ما في ملفات لسا" })
   ]);
   b.style.setProperty("--tint", "hsl(" + d.h + " 55% 62%)");
   return b;
