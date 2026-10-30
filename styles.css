@@ -37,7 +37,7 @@ body { min-height: 100vh; background: radial-gradient(900px 520px at 90% -10%, v
 
 .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 0 8px; }
 .logo { width: 116px; }
-.logo img { width: 100%; height: auto; display: block; }
+.logo img { width: 100%; height:40px; filter: brightness(1.4); auto; display: block; }
 .me { display: flex; align-items: center; gap: 4px; color: var(--muted); font-size: .86rem; flex-wrap: wrap; justify-content: flex-end; }
 .ibtn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all .2s cubic-bezier(.2,.7,.2,1); }
 .ibtn:hover { color: var(--text); border-color: var(--accent); background: rgba(255,255,255,0.05); transform: translateY(-1px); }
