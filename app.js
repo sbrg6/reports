@@ -934,20 +934,24 @@ async function showUploads() {
 }
 function topicsBox(it, onSaved) {
   const msg = el("div", { className: "cap" });
-  const ta = el("textarea", { rows: 4, placeholder: "محور لكل سطر", value: it.topics || "" });
+  const ta = el("textarea", { rows: 6, placeholder: "اكتب كل محور بسطر لحاله", value: it.topics || "" });
   const cb = el("input", { type: "checkbox", checked: !!it.cancelled });
   cb.onchange = async () => {
     const ok = await save(it, { cancelled: cb.checked });
     if (ok) onSaved(); else { cb.checked = !cb.checked; msg.textContent = "تعذّر الحفظ"; }
   };
-  ta.onchange = async () => {
+  const saveBtn = B("primary", "", "حفظ المحاور", async e => {
+    const b = e.currentTarget; b.disabled = true;
     const ok = await save(it, { topics: ta.value.trim() || null });
-    msg.textContent = ok ? "✓ انحفظ" : "تعذّر الحفظ";
-  };
+    b.disabled = false;
+    msg.textContent = ok ? "✓ انحفظت المحاور" : "تعذّر الحفظ";
+  });
   return el("div", { className: "score-box" }, [
-    el("label", { className: "cap" }, [cb, el("span", { textContent: " ملغاة لهذا الأسبوع" })]),
     el("div", { className: "cap", textContent: "محاور المحاضرة" }),
-    ta, msg
+    ta,
+    saveBtn,
+    el("label", { className: "cap" }, [cb, el("span", { textContent: " ملغاة لهذا الأسبوع" })]),
+    msg
   ]);
 }
 
