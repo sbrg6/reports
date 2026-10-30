@@ -957,13 +957,17 @@ async function showUploads() {
 }
 function topicsBox(it, onSaved) {
   const msg = el("div", { className: "cap" });
+  const base = "display:block;width:100%;min-height:70px;max-height:160px;padding:8px 10px;border:1px solid rgba(128,128,128,.45);border-radius:8px;background:rgba(128,128,128,.08);color:inherit;font:inherit;font-size:14px;box-sizing:border-box;resize:vertical;outline:none";
   const ta = el("textarea", {
     rows: 3,
     placeholder: "اكتب كل محور بسطر لحاله",
     value: it.topics || "",
-    style: "display:block;width:100%;min-height:70px;max-height:160px;padding:8px 10px;border:1px solid rgba(128,128,128,.45);border-radius:8px;background:rgba(128,128,128,.08);color:inherit;font:inherit;font-size:14px;box-sizing:border-box;resize:vertical"
+    style: base
   });
-  const cb = el("input", { type: "checkbox", checked: !!it.cancelled });
+  ta.onfocus = () => { ta.style.borderColor = "#2c91ed"; ta.style.boxShadow = "0 0 0 3px rgba(44,145,237,.25)"; };
+  ta.onblur = () => { ta.style.borderColor = "rgba(128,128,128,.45)"; ta.style.boxShadow = "none"; };
+
+  const cb = el("input", { type: "checkbox", checked: !!it.cancelled, style: "margin:0;width:16px;height:16px;flex:none" });
   cb.onchange = async () => {
     const ok = await save(it, { cancelled: cb.checked });
     if (ok) onSaved(); else { cb.checked = !cb.checked; msg.textContent = "تعذّر الحفظ"; }
@@ -974,13 +978,15 @@ function topicsBox(it, onSaved) {
     b.disabled = false;
     msg.textContent = ok ? "✓ انحفظت المحاور" : "تعذّر الحفظ";
   });
-  return el("div", { style: "display:flex;flex-direction:column;gap:8px;margin:10px 0" }, [
-    el("div", { className: "cap", textContent: "محاور المحاضرة" }),
+  const cancelRow = el("div", { style: "display:flex;align-items:center;justify-content:flex-start;gap:8px;width:auto;align-self:flex-start;margin:0;padding:0" }, [
+    cb,
+    el("span", { textContent: "ملغاة لهذا الأسبوع", style: "display:inline;margin:0;padding:0" })
+  ]);
+  return el("div", { style: "display:flex;flex-direction:column;align-items:stretch;gap:8px;margin:10px 0" }, [
+    el("div", { className: "cap", textContent: "محاور المحاضرة", style: "display:block;text-align:right;margin:0" }),
     ta,
-    el("div", { style: "display:flex;align-items:center;gap:8px;flex-wrap:wrap" }, [saveBtn, msg]),
-    el("label", { className: "cap", style: "display:flex;align-items:center;gap:6px;cursor:pointer" }, [
-      cb, el("span", { textContent: "ملغاة لهذا الأسبوع" })
-    ])
+    el("div", { style: "display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:wrap" }, [saveBtn, msg]),
+    cancelRow
   ]);
 }
 async function sendContent(btn) {
