@@ -1020,17 +1020,68 @@ async function showTimeline(it) {
 function printReport() {
   const E = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const kindName = { lecture: "نظري", practical: "عملي", bank: "بنك" };
-  const body = subjects.map(s => {
+  const all = subjects.flatMap(s => s.items);
+  const cnt = {
+    total: all.length,
+    pub: all.filter(i => i.stage === PUB).length,
+    late: all.filter(i => isLate(i) && i.stage !== PUB).length,
+    soon: all.filter(i => isSoon(i) && i.stage !== PUB).length,
+  };
+  const pill = (txt, cls) => '<span class="pill ' + cls + '">' + E(txt) + '</span>';
+  const kpi = (n, l) => '<div class="kpi"><b>' + n + '</b><span>' + l + '</span></div>';
+  const statusOf = i => i.stage === PUB ? ["منشور", "ok"] : i.stage === REDO ? ["رجع للتعديل", "warn"] : [STAGES[i.stage], "neutral"];
+  const flagOf = i => i.postponed ? ["مؤجل", "neutral"] : isLate(i) ? ["متأخر", "bad"] : isSoon(i) ? ["قريب", "warn"] : ["ضمن المهلة", "ok"];
+
+  const sections = subjects.map(s => {
     const its = s.items.slice().sort((a, b) => a.id - b.id);
-    if (!its.length) return "<h2>" + E(s.name) + "</h2><p>ما في ملفات</p>";
+    const pub = its.filter(i => i.stage === PUB).length;
+    const pct = its.length ? Math.round(pub / its.length * 100) : 0;
+    const head = '<div class="subj"><div class="subj-h"><h2>' + E(s.name) + '</h2><span class="pct">' + pct + '%</span></div>' +
+      '<div class="bar"><i style="width:' + pct + '%"></i></div>';
+    if (!its.length) return head + '<p class="empty">ما في ملفات</p></div>';
     const rows = its.map(i => {
-      const st = i.stage === PUB ? "منشور" : i.stage === REDO ? "رجع للتعديل" : STAGES[i.stage];
-      const flag = i.postponed ? "مؤجل" : isLate(i) ? "متأخر" : isSoon(i) ? "قريب" : "ضمن المهلة";
-      return "<tr><td>" + E(kindName[i.kind] || i.kind) + "</td><td>" + E(i.name) + "</td><td>" + E(st) + "</td><td>" + E(flag) + "</td></tr>";
+      const [st, sc] = statusOf(i), [fl, fc] = flagOf(i);
+      return '<tr><td>' + E(kindName[i.kind] || i.kind) + '</td><td>' + E(i.name) + '</td><td>' + pill(st, sc) + '</td><td>' + pill(fl, fc) + '</td></tr>';
     }).join("");
-    return "<h2>" + E(s.name) + "</h2><table><tr><th>النوع</th><th>الملف</th><th>المرحلة</th><th>الحالة</th></tr>" + rows + "</table>";
+    return head + '<table><thead><tr><th>النوع</th><th>الملف</th><th>المرحلة</th><th>الحالة</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
   }).join("");
 
+  const css = `
+body{font-family:system-ui,sans-serif;margin:0;color:#1d2433;background:#fff}
+.wrap{padding:28px 32px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #1f3a8a;padding-bottom:12px;margin-bottom:18px}
+.top h1{margin:0;font-size:22px;color:#1f3a8a}
+.top .d{font-size:12px;color:#667}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.kpi{border:1px solid #dde;border-radius:10px;padding:10px 12px}
+.kpi b{display:block;font-size:22px}
+.kpi span{font-size:12px;color:#667}
+.subj{margin:18px 0 8px;break-inside:avoid}
+.subj-h{display:flex;justify-content:space-between;align-items:center}
+.subj h2{font-size:16px;margin:0}
+.pct{font-weight:700;color:#1f3a8a}
+.bar{height:6px;background:#e6e9f2;border-radius:4px;overflow:hidden;margin:6px 0 8px}
+.bar i{display:block;height:100%;background:#1f3a8a}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:#f3f5fa;text-align:right;padding:7px 8px;font-weight:600}
+td{border-bottom:1px solid #eef0f5;padding:7px 8px;text-align:right}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px}
+.ok{background:#e3f6ea;color:#17703a}.warn{background:#fff4d6;color:#8a5a00}
+.bad{background:#fde4e4;color:#b42318}.neutral{background:#eceef3;color:#444}
+.empty{color:#889;font-size:13px}
+@media print{.wrap{padding:0}}
+`;
+
+  const html = '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير الملفات</title><style>' + css + '</style></head><body><div class="wrap">' +
+    '<div class="top"><h1>تقرير الملفات</h1><div class="d">' + E(new Date().toLocaleDateString("ar", { timeZone: "Asia/Damascus" })) + '</div></div>' +
+    '<div class="kpis">' + kpi(cnt.total, "ملف") + kpi(cnt.pub, "منشور") + kpi(cnt.late, "متأخر") + kpi(cnt.soon, "قريب") + '</div>' +
+    sections + '</div><script>window.onload=function(){window.print()}<\/script></body></html>';
+
+  const w = window.open("", "_blank");
+  if (!w) { toast("اسمح بالنوافذ المنبثقة للموقع"); return; }
+  w.document.write(html);
+  w.document.close();
+}
   const html = '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير الملفات</title><style>' +
     'body{font-family:system-ui,sans-serif;margin:24px;color:#111}' +
     'h1{font-size:20px}h2{font-size:16px;margin:20px 0 6px;border-bottom:1px solid #ccc;padding-bottom:4px}' +
