@@ -356,7 +356,14 @@ const prio = s => {
   const L = s.items.filter(isLate);
   return (L.some(i => sevOf(i) === 2) ? 1e4 : 0) + L.length * 100 + s.items.filter(isSoon).length * 10 + s.items.filter(i => i.stage === REDO).length;
 };
-
+function progressRing(pct) {
+  const r = 18, c = 2 * Math.PI * r, off = c * (1 - pct / 100);
+  return '<svg width="46" height="46" viewBox="0 0 46 46" style="flex:none">' +
+    '<circle cx="23" cy="23" r="18" fill="none" stroke="currentColor" stroke-opacity=".15" stroke-width="5"/>' +
+    '<circle cx="23" cy="23" r="18" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"' +
+    ' stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '" transform="rotate(-90 23 23)"/>' +
+    '<text x="23" y="27" text-anchor="middle" font-size="11" fill="currentColor">' + pct + '%</text></svg>';
+}
 function subjCard(s) {
   const d = decor(s.name), its = s.items.slice().sort((a, b) => a.id - b.id);
   const p = its.filter(i => i.stage === PUB).length, L = its.filter(isLate), S = its.filter(isSoon), right = [];
@@ -364,14 +371,27 @@ function subjCard(s) {
   if (S.length) right.push(el("span", { className: "chip soon", textContent: S.length + " قريب" }));
   if (s.lead_id === me.id) right.push(el("span", { className: "badge", textContent: "مادتك" }));
   if (s.lead_id) right.push(avatar(s.lead_id));
+  const pct = its.length ? Math.round(p / its.length * 100) : 0;
   const b = el("button", { className: "card subj", onclick: () => showDetail(s) }, [
     orn(d.m),
+    el("div", { className: "ring", style: "color:hsl(" + d.h + " 55% 62%)", innerHTML: progressRing(pct) }),
     el("div", { className: "row" }, [el("h2", { textContent: s.name }), el("div", { className: "row-right" }, right)]),
     its.length ? el("div", { className: "pips" }, its.map(i => el("span", { className: "pip" + (i.stage === PUB ? " on" : i.stage === REDO ? " redo" : isLate(i) ? " late" : isSoon(i) ? " soon" : "") }))) : null,
     el("div", { className: "cap", textContent: its.length ? (p + " من " + its.length + " مرفوعة") : "ما في ملفات لسا" })
   ]);
   b.style.setProperty("--tint", "hsl(" + d.h + " 55% 62%)");
   return b;
+}
+function countUp(node, to) {
+  if (!Number.isFinite(to) || to === 0) return;
+  const t0 = performance.now(), dur = 700;
+  const step = t => {
+    const k = Math.min(1, (t - t0) / dur);
+    node.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 3))));
+    if (k < 1) requestAnimationFrame(step);
+  };
+  node.textContent = "0";
+  requestAnimationFrame(step);
 }
 
 function showList(back) {
@@ -444,6 +464,7 @@ function showList(back) {
   drawGrid();
   kids.push(grid);
   mount(el("div", { className: "view" + (back ? " dir-back" : "") }, kids));
+    document.querySelectorAll(".stats .stat b").forEach(b => countUp(b, +b.textContent));
 }
 
 function showLate(list, title) {
