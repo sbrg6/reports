@@ -406,6 +406,11 @@ function showList(back) {
     el("h1", { textContent: "المواد" }),
     el("p", { className: "sub", textContent: "تابع كل ملف ومرحلته بمكان واحد." }),
     el("div", { className: "stats" }, [stat(all.length, "ملف"), stat(pub, "مرفوع", "ok"), stat(redo, "للتعديل", "warn")]),
+        el("div", { className: "legend", style: "display:flex;gap:14px;flex-wrap:wrap;font-size:12px;opacity:.85;margin:6px 0 2px" }, [
+      el("span", { textContent: "● ضمن المهلة", style: "color:#3fcf8e" }),
+      el("span", { textContent: "● قريب من المهلة", style: "color:#f5c451" }),
+      el("span", { textContent: "● متأخر", style: "color:#ff6b6b" })
+    ]),
     el("div", { className: "progress" }, [
       el("div", { className: "progress-top" }, [el("span", { textContent: isAdmin() ? "تقدّم الفصل" : "تقدّم مادتك" }), el("span", { textContent: pct + "%" })]),
       el("div", { className: "progress-track" }, [el("div", { className: "progress-fill", style: "width:" + pct + "%" })])
