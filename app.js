@@ -80,7 +80,7 @@ const LATE_SEVERE = 7;
 const p2 = n => String(n).padStart(2, "0");
 const fmt = d => { const x = new Date(d); return p2(x.getDate()) + "/" + p2(x.getMonth() + 1); };
 const daysSince = d => Math.floor((Date.now() - new Date(d).getTime()) / 864e5);
-const ITEM_COLS = "id,kind,name,stage,note,since,wf_stage,redo,due_at,warn_at,extended_hours,section,session_date,postponed,excused";
+const ITEM_COLS = "id,kind,name,stage,note,since,wf_stage,redo,due_at,warn_at,extended_hours,section,session_date,postponed,topics,cancelled";
 const hrs = ms => ms / 36e5;
 const fmtH = h => { h = Math.abs(h); if (h < 1) return Math.max(1, Math.round(h * 60)) + " د"; if (h < 24) return Math.round(h) + " س"; const r = Math.round(h % 24); return Math.floor(h / 24) + " يوم" + (r ? " و" + r + " س" : ""); };
 const todayStr = () => { const d = new Date(); return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()); };
@@ -416,6 +416,7 @@ function showList(back) {
   if (subjects.length) acts.push(B("ghost", "doc", "تقرير الأسبوع", () => showReport(subjects)));
   if (isAdmin()) {
     acts.push(B("ghost", "gear", "إدارة المواد", showAdmin));
+    acts.push(B("ghost", "doc", "تقرير المحتوى", sendContent));
     acts.push(B("ghost", "doc", "ملفات بانتظار التأكيد", showUploads));
     acts.push(B("ghost", "hist", "مؤشرات الفرق", showHealth));
     acts.push(B("ghost", "box", "الأرشيف", showArchive));
@@ -527,6 +528,7 @@ function itemCard(it, edit) {
       note.onchange = () => save(it, { note: note.value.trim() });
       card.appendChild(note);
     } else if (it.note) card.appendChild(el("div", { className: "cap", textContent: it.note }));
+        if (edit && (it.kind === "lecture" || it.kind === "practical")) card.appendChild(topicsBox(it, render));
     if (isAdmin()) { card.appendChild(extendBox(it, render)); card.appendChild(scoreBox(it, render)); }
         if (isAdmin()) card.appendChild(excusedBox(it, render));
         if (isTech() && it.wf_stage === 2) card.appendChild(techBox(it, render));
@@ -929,4 +931,32 @@ async function showUploads() {
 
   openSheet("ملفات مرفوعة بانتظار التأكيد",
     rows.length ? rows : [el("div", { className: "cap", textContent: "ما فيه شي بانتظار التأكيد" })]);
+}
+function topicsBox(it, onSaved) {
+  const msg = el("div", { className: "cap" });
+  const ta = el("textarea", { rows: 4, placeholder: "محور لكل سطر", value: it.topics || "" });
+  const cb = el("input", { type: "checkbox", checked: !!it.cancelled });
+  cb.onchange = async () => {
+    const ok = await save(it, { cancelled: cb.checked });
+    if (ok) onSaved(); else { cb.checked = !cb.checked; msg.textContent = "تعذّر الحفظ"; }
+  };
+  ta.onchange = async () => {
+    const ok = await save(it, { topics: ta.value.trim() || null });
+    msg.textContent = ok ? "✓ انحفظ" : "تعذّر الحفظ";
+  };
+  return el("div", { className: "score-box" }, [
+    el("label", { className: "cap" }, [cb, el("span", { textContent: " ملغاة لهذا الأسبوع" })]),
+    el("div", { className: "cap", textContent: "محاور المحاضرة" }),
+    ta, msg
+  ]);
+}
+
+async function sendContent(btn) {
+  if (!confirm("نرسل تقرير المحتوى للمجموعة الآن؟")) return;
+  btn.disabled = true;
+  try {
+    const x = await fnCall({ action: "content" });
+    toast(x.ok ? (x.sent ? "انرسل تقرير المحتوى ✓" : "ما فيه محاور جديدة هالأسبوع") : "ما انرسل: " + (x.description || ""));
+  } catch (e) { toast("خطأ شبكة، جرّب مرة تانية"); }
+  finally { btn.disabled = false; }
 }
