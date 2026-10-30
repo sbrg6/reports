@@ -6,7 +6,7 @@ const STAGES = ["تحضير علمي", "كتابة وفحص تقني", "تدقي
 const STEP_LABELS = ["التحضير", "التقني", "التدقيق", "النشر", "منشور"];
 const WHERE = ["متوقف عند العضو العلمي", "متوقف عند العضو التقني", "في مرحلة التدقيق العلمي", "في مرحلة النشر", "", "رجع للتعديل"];
 const PUB = 4, REDO = 5, LATE_DAYS = 4;
-const KINDS = [["lecture", "القسم النظري", "تم رفع", "محاضرة 3"], ["practical", "القسم العملي", "تم رفع", "عملي 1"], ["bank", "البنك", "تم تجهيز", "بنك 2"], ["support", "القسم الداعم", "تم رفع", "داعم 1"], ["summary", "قسم الملخص", "تم رفع", "ملخص 1"]];
+const KINDS = [["lecture", "القسم النظري", "تم رفع", "محاضرة 3"], ["practical", "القسم العملي", "تم رفع", "عملي 1"], ["bank", "البنك", "تم تجهيز", "بنك 2"]];
 const THEMES = [
   { id: "night", name: "نجوم الليل", sw: ["#0f1b3d", "#c9a64b"] },
   { id: "ink", name: "حبر", sw: ["#0d1424", "#b8c4da"] },
@@ -663,36 +663,48 @@ function showDetail(s, fwd) {
     el("div", { className: "btns" }, [B("ghost", "doc", "تقرير المادة", () => showReport([s]))])
   ];
   const sections = [];
-  KINDS.forEach(([kind, title, , ph]) => {
-    const its = s.items.filter(i => i.kind === kind).sort((a, b) => a.id - b.id);
-const kindIcons = { lecture: "lecture", practical: "flask", bank: "bank" };
-sections.push(el("div", { className: "section-h" }, [
-  el("h2", { innerHTML: ic(kindIcons[kind] || "doc", 20) + " <span style='vertical-align:middle; margin-right:6px;'>" + title + "</span>" }),
-  el("span", { className: "cap", textContent: its.length + " ملف" })
-]));
+    KINDS.forEach(([kind, title, , ph]) => {
+    const group = kind === "lecture" ? ["lecture", "support", "summary"] : [kind];
+    const rank = { lecture: 0, support: 1, summary: 2 };
+    const its = s.items.filter(i => group.includes(i.kind)).sort((a, b) => (rank[a.kind] - rank[b.kind]) || (a.id - b.id));
+    const icon = kind === "lecture" ? "lecture" : kind === "practical" ? "flask" : "bank";
+    sections.push(el("div", { className: "section-h" }, [
+      el("h2", { innerHTML: ic(icon, 20) + " <span style='vertical-align:middle; margin-right:6px;'>" + title + "</span>" }),
+      el("span", { className: "cap", textContent: its.length + " ملف" })
+    ]));
     if (!its.length) sections.push(emptyState(kind === "practical" ? "box" : "doc", kind === "practical" ? "ما في عملي لهالمادة" : "ما في ملفات لسا", edit ? "أضف أول ملف من تحت." : "بينضاف لما يبلّش مسؤول المادة."));
-    its.forEach(it => sections.push(itemCard(it, edit)));
+    let prev = null;
+    its.forEach(it => {
+      if (it.kind !== prev && it.kind !== "lecture") {
+        sections.push(el("div", { className: "cap", textContent: it.kind === "support" ? "— الداعم —" : "— الملخص —" }));
+      }
+      prev = it.kind;
+      sections.push(itemCard(it, edit));
+    });
     if (edit) {
       const nm = el("input", { placeholder: "اسم الملف (مثال: " + ph + ")" });
-    const secSel = el("select", {}, [["A", "شعبة 1 (A)"], ["B", "شعبة 2 (B)"]].map(([v, l]) => el("option", { value: v, textContent: l })));
+      const typeSel = kind === "lecture" ? el("select", {}, [["lecture", "نظري"], ["support", "داعم"], ["summary", "ملخص"]].map(([v, l]) => el("option", { value: v, textContent: l }))) : null;
+      const secSel = el("select", {}, [["A", "شعبة 1 (A)"], ["B", "شعبة 2 (B)"]].map(([v, l]) => el("option", { value: v, textContent: l })));
       secSel.value = lsGet("bb_sec", "A");
       const dateIn = el("input", { type: "date", value: todayStr() });
       const add = B("primary", "plus", "إضافة", async () => {
         const v = nm.value.trim();
         if (!v) {
-  toast("اكتب اسم الملف أولاً");
-  nm.classList.add("shake");
-  nm.focus();
-  setTimeout(() => nm.classList.remove("shake"), 400);
-  return;
-}
-        const { data, error } = await sb.from("items").insert({ subject_id: s.id, kind, name: v, section: secSel.value || null, session_date: kind === "bank" ? null : (dateIn.value || null) }).select(ITEM_COLS).single();
+          toast("اكتب اسم الملف أولاً");
+          nm.classList.add("shake");
+          nm.focus();
+          setTimeout(() => nm.classList.remove("shake"), 400);
+          return;
+        }
+        const k = typeSel ? typeSel.value : kind;
+        const { data, error } = await sb.from("items").insert({ subject_id: s.id, kind: k, name: v, section: secSel.value || null, session_date: kind === "bank" ? null : (dateIn.value || null) }).select(ITEM_COLS).single();
         if (error) { toast("تعذّرت الإضافة: " + error.message); return; }
         lsSet("bb_sec", secSel.value);
         s.items.push(data);
         showDetail(s);
       });
-      sections.push(el("div", { className: "add" }, kind === "bank" ? [nm, add] : [nm, secSel, dateIn, add]));
+      const row = kind === "bank" ? [nm, add] : [typeSel, nm, secSel, dateIn, add];
+      sections.push(el("div", { className: "add" }, row.filter(Boolean)));
     }
   });
   mount(el("div", { className: "view" + (fwd === false ? "" : " dir-fwd") }, head.concat(sections)));
