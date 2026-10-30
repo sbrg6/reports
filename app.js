@@ -552,8 +552,8 @@ function itemCard(it, edit) {
     } else if (it.note) card.appendChild(el("div", { className: "cap", textContent: it.note }));
         if (edit && (it.kind === "lecture" || it.kind === "practical")) card.appendChild(topicsBox(it, render));
         card.appendChild(B("ghost", "hist", "السجل", () => showTimeline(it)));
-    if (isAdmin()) { card.appendChild(extendBox(it, render)); card.appendChild(scoreBox(it, render)); }
-        if (isAdmin()) card.appendChild(excusedBox(it, render));
+    if (isAdmin()) { card.appendChild(extendBox(it, render)); }
+    if (isAdmin()) card.appendChild(excusedBox(it, render));
         if (isTech() && it.wf_stage === 2) card.appendChild(techBox(it, render));
     function holderBox(it, onSaved) {
   const msg = el("div", { className: "cap" });
