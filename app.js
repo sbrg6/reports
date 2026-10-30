@@ -434,15 +434,19 @@ function showList(back) {
   const acts = [];
   if (isAdmin()) acts.push(B("primary", "send", "إرسال للمجموعة", e => sendGroup(e.currentTarget)));
   if (subjects.length) acts.push(B("ghost", "doc", "تقرير الأسبوع", () => showReport(subjects)));
+
   if (isAdmin()) {
-    acts.push(B("ghost", "gear", "إدارة المواد", showAdmin));
-    acts.push(B("ghost", "doc", "تقرير PDF", printReport));
-    acts.push(B("ghost", "doc", "تقرير المحتوى", sendContent));
-    acts.push(B("ghost", "doc", "ملفات بانتظار التأكيد", showUploads));
-    acts.push(B("ghost", "hist", "مؤشرات الفرق", showHealth));
-    acts.push(B("ghost", "box", "الأرشيف", showArchive));
-    acts.push(B("ghost", "hist", "السجل", showChanges));
-    acts.push(B("ghost", "down", "نسخة CSV", backup));
+    const tools = [
+      B("ghost", "gear", "إدارة المواد", showAdmin),
+      B("ghost", "doc", "تقرير PDF", printReport),
+      B("ghost", "doc", "تقرير المحتوى", e => sendContent(e.currentTarget)),
+      B("ghost", "doc", "ملفات بانتظار التأكيد", showUploads),
+      B("ghost", "hist", "مؤشرات الفرق", showHealth),
+      B("ghost", "box", "الأرشيف", showArchive),
+      B("ghost", "hist", "السجل", showChanges),
+      B("ghost", "down", "نسخة CSV", backup)
+    ];
+    acts.push(B("ghost", "gear", "أدوات", () => openSheet("أدوات", tools)));
   }
   if (acts.length) kids.push(el("div", { className: "btns" }, acts));
   if (!subjects.length) kids.push(emptyState("box", "ما في مواد ظاهرة لحسابك لسا", "اطلب من الأدمن يربط مادة بحسابك."));
