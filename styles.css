@@ -230,3 +230,9 @@ input:focus, select:focus { border-color: var(--accent); }
   color: var(--accent);
 }
 html, body { overflow-x: hidden; max-width: 100%; }
+@media (max-width: 700px) {
+  * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  .card, .stat, .item, .score-box { box-shadow: none !important; transition: none !important; }
+  .view { animation: none !important; }
+  .login { transform: none !important; }
+}
