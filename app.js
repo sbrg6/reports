@@ -452,7 +452,7 @@ function showList(back) {
   if (late.length) {
     const severe = late.some(({ i }) => sevOf(i) === 2);
     kids.push(el("button", { className: "card late", onclick: () => showLate(late) }, [
-      el("span", { innerHTML: ic("alert", 18) }), el("span", { textContent: "ملفات متأخرة" }),
+      el("span", { textContent: "ملفات متأخرة · اضغط لتشوفها" }),
       el("span", { className: "chip" + (severe ? " sev" : "") }, [document.createTextNode(String(late.length))])
     ]));
   }
