@@ -259,9 +259,9 @@ async function logout() {
 function topbar() {
   const who = el("div", { className: "me" }, [
     el("span", { textContent: (prof && prof.name) || (me && me.email) || "" }),
-    IB("palette", "المظهر", showThemes),
-    IB("key", "تغيير كلمة السر", showPw),
-    IB("out", "خروج", logout)
+    B("ghost", "palette", "المظهر", showThemes),
+    B("ghost", "key", "كلمة السر", showPw),
+    B("ghost", "out", "خروج", logout)
   ]);
   return el("div", { className: "top" }, [
 el("div", { className: "logo" }, [el("img", { src: "Horizontal logo 2.png", alt: "Blue Bits" })]),
