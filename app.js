@@ -539,6 +539,7 @@ function itemCard(it, edit) {
       const on = !redo && i <= it.stage;
       const b = el("button", { className: "step" + (on ? " on" : "") + (!redo && i === it.stage ? " cur" : ""), textContent: lab, disabled: !edit, title: STAGES[i] });
       b.onclick = async () => {
+                if (i === PUB && !confirm("نعلّم الملف منشور؟")) return;
         if (await save(it, { stage: i })) {
           render();
           card.classList.add(i === PUB ? "flash-ok" : "flash");
@@ -553,7 +554,8 @@ function itemCard(it, edit) {
       el("div", { className: "cap" + (sev ? " sev" : soon ? " soon" : ""), textContent: dueText(it) + (soon ? " ⏳" : "") })
     );
     if (edit) {
-      if (!redo) card.appendChild(el("button", { className: "redo-btn", textContent: "↩ رجّعه للتعديل", onclick: async () => { if (await save(it, { stage: REDO })) render(); } }));
+      if (!redo) card.appendChild(el("button", { className: "redo-btn", textContent: "↩ رجّعه للتعديل",onclick: async () => { if (!confirm("نرجّع الملف للتعديل؟")) return; if (await save(it, { stage: REDO })) render(); }
+    }));
       const note = el("input", { className: "note", placeholder: "السبب أو ملاحظة (تظهر بالتقرير)", value: it.note || "" });
       note.onchange = () => save(it, { note: note.value.trim() });
       card.appendChild(note);
