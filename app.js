@@ -56,7 +56,20 @@ function el(tag, props, kids) {
   (kids || []).forEach(k => { if (k) e.appendChild(typeof k === "string" ? document.createTextNode(k) : k); });
   return e;
 }
-function B(cls, icon, label, onclick) { return el("button", { className: "btn " + cls, innerHTML: (icon ? ic(icon, 16) : "") + "<span>" + label + "</span>", onclick }); }
+function B(cls, icon, label, onclick) {
+  return el("button", {
+    className: "btn " + cls,
+    innerHTML: (icon ? ic(icon, 16) : "") + "<span>" + label + "</span>",
+    onclick: async e => {
+      const b = e.currentTarget;
+      if (b.dataset.busy) return;
+      b.dataset.busy = "1";
+      b.disabled = true;
+      try { await onclick(e); }
+      finally { delete b.dataset.busy; b.disabled = false; }
+    }
+  });
+}
 function IB(icon, title, onclick) { return el("button", { className: "ibtn", title, innerHTML: ic(icon, 17), onclick }); }
 function toast(t) {
   const x = document.getElementById("toast");
