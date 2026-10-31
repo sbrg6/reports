@@ -554,7 +554,8 @@ function itemCard(it, edit) {
       el("div", { className: "cap" + (sev ? " sev" : soon ? " soon" : ""), textContent: dueText(it) + (soon ? " ⏳" : "") })
     );
     if (edit) {
-      if (!redo) card.appendChild(el("button", { className: "redo-btn", textContent: "↩ رجّعه للتعديل",onclick: async () => { if (!confirm("نرجّع الملف للتعديل؟")) return; if (await save(it, { stage: REDO })) render(); }
+      if (!redo) card.appendChild(el("button", { className: "redo-btn", textContent: "↩ رجّعه للتعديل",moveBtn.disabled = !it.tech_review;
+  if (!it.tech_review) moveBtn.title = "احفظ نتيجة الفحص أولاً، وبعدها يتفعّل النقل";
     }));
       const note = el("input", { className: "note", placeholder: "السبب أو ملاحظة (تظهر بالتقرير)", value: it.note || "" });
       note.onchange = () => save(it, { note: note.value.trim() });
@@ -608,6 +609,7 @@ function techBox(it, onSaved) {
     el("option", { value: "major", textContent: "جذري" }),
   ]);
   sel.value = it.tech_review || "";
+  const hint = el("div", { className: "cap", textContent: it.tech_review ? "" : "احفظ نتيجة الفحص أولاً ليتفعّل النقل للتدقيق" });
   const moveBtn = B("ghost", "", "نقل للتدقيق", async e => {
     const b = e.currentTarget; b.disabled = true;
     const ok = await save(it, { stage: 2 });
@@ -615,6 +617,7 @@ function techBox(it, onSaved) {
     if (ok) onSaved(); else msg.textContent = "تعذّر النقل";
   });
   moveBtn.disabled = !it.tech_review;
+  moveBtn.title = it.tech_review ? "" : "احفظ نتيجة الفحص أولاً";
   return el("div", { className: "score-box" }, [
     el("div", { className: "score-row" }, [el("span", { textContent: "الفحص التقني" }), sel]),
     B("primary", "", "حفظ النتيجة", async e => {
@@ -624,6 +627,7 @@ function techBox(it, onSaved) {
       b.disabled = false;
       if (ok) onSaved(); else msg.textContent = "تعذّر الحفظ";
     }),
+    hint,
     moveBtn,
     msg
   ]);
