@@ -71,8 +71,18 @@ function B(cls, icon, label, onclick) {
   });
 }
 function IB(icon, title, onclick) { return el("button", { className: "ibtn", title, innerHTML: ic(icon, 17), onclick }); }
+function arErr(msg) {
+  const m = String(msg || "");
+  if (/row-level security|violates row-level/i.test(m)) return "ما عندك صلاحية على هالعملية. كلّم الأدمن.";
+  if (/duplicate key|already exists/i.test(m)) return "هالشي موجود من قبل.";
+  if (/violates check constraint/i.test(m)) return "القيمة اللي دخلتها مو مقبولة.";
+  if (/violates foreign key/i.test(m)) return "في شي مرتبط بالعملية ما ينحذف أو ما ينوجد.";
+  if (/Failed to fetch|NetworkError|network/i.test(m)) return "ما فيه اتصال بالإنترنت. جرّب مرة ثانية.";
+  if (/JWT|expired|not authenticated/i.test(m)) return "انتهت الجلسة. سجّل دخول من جديد.";
+  return m;
+}
 function toast(t) {
-    if (typeof t === "string") t = t.replace(/\s+/g, " ").trim();
+  if (typeof t === "string") t = arErr(t).replace(/\s+/g, " ").trim();
   const x = document.getElementById("toast");
   x.textContent = t; x.classList.add("on");
   clearTimeout(toast.t); toast.t = setTimeout(() => x.classList.remove("on"), 3800);
