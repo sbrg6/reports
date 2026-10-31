@@ -553,10 +553,7 @@ function itemCard(it, edit) {
       el("div", { className: "stage" + (redo ? " redo" : ""), textContent: redo ? "رجعت للتعديل" : STAGES[it.stage] }),
       el("div", { className: "cap" + (sev ? " sev" : soon ? " soon" : ""), textContent: dueText(it) + (soon ? " ⏳" : "") })
     );
-    if (edit) {
-      if (!redo) card.appendChild(el("button", { className: "redo-btn", textContent: "↩ رجّعه للتعديل",moveBtn.disabled = !it.tech_review;
-  if (!it.tech_review) moveBtn.title = "احفظ نتيجة الفحص أولاً، وبعدها يتفعّل النقل";
-    }));
+        if (!redo) card.appendChild(el("button", { className: "redo-btn", textContent: "↩ رجّعه للتعديل", onclick: async () => { if (!confirm("نرجّع الملف للتعديل؟")) return; if (await save(it, { stage: REDO })) render(); } }));
       const note = el("input", { className: "note", placeholder: "السبب أو ملاحظة (تظهر بالتقرير)", value: it.note || "" });
       note.onchange = () => save(it, { note: note.value.trim() });
       card.appendChild(note);
