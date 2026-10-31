@@ -689,7 +689,9 @@ function scoreBox(it, onSaved) {
 }
 
 function showDetail(s, fwd) {
+    if (!s.items) s.items = [];
   cur = s;
+    if (!s.items.length) mount(el("div", { className: "view" }, [el("p", { className: "sub", textContent: "جاري التحميل…" })]));
   closeSheets();
   const edit = s.lead_id === me.id || isAdmin();
   const head = [
