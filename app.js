@@ -72,9 +72,10 @@ function B(cls, icon, label, onclick) {
 }
 function IB(icon, title, onclick) { return el("button", { className: "ibtn", title, innerHTML: ic(icon, 17), onclick }); }
 function toast(t) {
+    if (typeof t === "string") t = t.replace(/\s+/g, " ").trim();
   const x = document.getElementById("toast");
   x.textContent = t; x.classList.add("on");
-  clearTimeout(toast.t); toast.t = setTimeout(() => x.classList.remove("on"), 2400);
+  clearTimeout(toast.t); toast.t = setTimeout(() => x.classList.remove("on"), 3800);
 }
 function openSheet(title, nodes) {
   const ov = el("div", { className: "ov", onclick: e => { if (e.target === ov) ov.remove(); } });
